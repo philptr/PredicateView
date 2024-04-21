@@ -7,9 +7,19 @@
 
 import SwiftUI
 
-struct NumericExpression<Root, Number>: SimpleExpression where Number: Numeric & Codable & Strideable & Hashable {
-    typealias ExprView = NumericExpressionView<Root, Number>
+public typealias NumericExpressionCompatible = Numeric & Strideable & ExpressionCompatible
+
+extension AnyExpression {
+    public init<T>(keyPath: KeyPath<Root, T>, title: String) where T: NumericExpressionCompatible {
+        self.wrappedValue = NumericExpression(keyPath: keyPath, title: title)
+    }
     
+    public init<T>(keyPath: KeyPath<Root, T?>, title: String) where T: NumericExpressionCompatible {
+        self.wrappedValue = OptionalExpression<Root, NumericExpression>(keyPath: keyPath, title: title)
+    }
+}
+
+struct NumericExpression<Root, Number>: ContentExpression where Number: NumericExpressionCompatible {
     enum Operator: String, CaseIterable {
         case equals = "equals"
         case isLessThan = "is less than"
@@ -18,43 +28,51 @@ struct NumericExpression<Root, Number>: SimpleExpression where Number: Numeric &
         case isGreaterThanOrEqual = "is greater than or equal"
     }
     
+    static var defaultAttribute: ExpressionAttribute<Self> { .init(operator: .equals, value: 0) }
+    
     var id = UUID()
     let keyPath: KeyPath<Root, Number>
     let title: String
-    var attribute: ExpressionAttribute<Self> = .init(operator: .equals, value: 0)
+    var attribute: ExpressionAttribute<Self> = Self.defaultAttribute
     
-    func buildPredicate(using input: PredicateExpressions.Variable<Root>) -> (any StandardPredicateExpression<Bool>)? {
-        switch attribute.operator {
+    static func buildPredicate<V>(
+        for variable: V,
+        using value: Value,
+        operation: Operator
+    ) -> (any StandardPredicateExpression<Bool>)? where V: StandardPredicateExpression<Value> {
+        switch operation {
         case .equals:
             return PredicateExpressions.Equal(
-                lhs: PredicateExpressions.KeyPath(root: input, keyPath: keyPath),
-                rhs: PredicateExpressions.Value(attribute.value)
+                lhs: variable,
+                rhs: PredicateExpressions.Value(value)
             )
         default:
-            let operation: PredicateExpressions.ComparisonOperator
-            switch attribute.operator {
+            let comparisonOperator: PredicateExpressions.ComparisonOperator? = switch operation {
             case .isLessThan:
-                operation = .lessThan
+                .lessThan
             case .isGreaterThan:
-                operation = .greaterThan
+                .greaterThan
             case .isLessThanOrEqual:
-                operation = .lessThanOrEqual
+                .lessThanOrEqual
             case .isGreaterThanOrEqual:
-                operation = .greaterThanOrEqual
-            default: return nil
+                .greaterThanOrEqual
+            default: nil
             }
             
+            guard let comparisonOperator else { return nil }
             return PredicateExpressions.Comparison(
-                lhs: PredicateExpressions.KeyPath(root: input, keyPath: keyPath),
-                rhs: PredicateExpressions.Value(attribute.value),
-                op: operation
+                lhs: variable,
+                rhs: PredicateExpressions.Value(value),
+                op: comparisonOperator
             )
         }
     }
-}
-
-struct NumericExpressionView<Root, Number>: ExpressionView where Number: Numeric & Strideable & Codable & Hashable {
-    struct StepperField: View {
+    
+    static func makeContentView(_ value: Binding<Number>) -> some View {
+        StepperField(title: "Value", value: value)
+    }
+    
+    private struct StepperField: View {
         let title: LocalizedStringKey
         @Binding var value: Number
 
@@ -67,19 +85,5 @@ struct NumericExpressionView<Root, Number>: ExpressionView where Number: Numeric
                     .labelsHidden()
             }
         }
-    }
-    
-    typealias Expression = NumericExpression<Root, Number>
-    
-    @Binding var expression: Expression
-    
-    var body: some View {
-        TokenView(Root.self, header: {
-            Text("\(expression.title) \(expression.attribute.operator.rawValue)")
-        }, content: {
-            StepperField(title: "Value", value: $expression.attribute.value)
-        }, menu: {
-            expression.operatorPickerView(using: $expression.attribute)
-        })
     }
 }

@@ -7,10 +7,13 @@
 
 import SwiftUI
 
+// MARK: - ExpressionView
+
 public protocol ExpressionView<Expr>: View {
     associatedtype Root
     associatedtype Expr: Expression<Root>
     
+    var expression: Binding<Expr> { get }
     init(expression: Binding<Expr>)
 }
 
@@ -20,6 +23,9 @@ extension ExpressionView {
     }
 }
 
+// MARK: - HierarchicalExpressionView
+
 public protocol HierarchicalExpressionView<Expr>: ExpressionView {
     init(expression: Binding<Expr>, parent: Binding<LogicalExpression<Root>>?)
 }
+

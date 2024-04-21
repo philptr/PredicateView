@@ -25,18 +25,18 @@ public struct LogicalExpression<Root>: CompoundExpression {
         return reducedExpression(for: predicates)
     }
     
-    private func reducedExpression(for predicates: [(any StandardPredicateExpression<Bool>)]) -> any StandardPredicateExpression<Bool> {
-        precondition(!predicates.isEmpty)
-        switch predicates.count {
+    private func reducedExpression(for expressions: [(any StandardPredicateExpression<Bool>)]) -> any StandardPredicateExpression<Bool> {
+        precondition(!expressions.isEmpty)
+        switch expressions.count {
         case 1:
-            return predicates[0]
+            return expressions[0]
         case 2:
-            return tupleExpression(for: attribute, firstExpression: predicates[0], secondExpression: predicates[1])
+            return tupleExpression(for: attribute, firstExpression: expressions[0], secondExpression: expressions[1])
         default:
             break
         }
         
-        let subExpressions = predicates.unfoldSubSequences(limitedTo: 2).map { reducedExpression(for: Array($0)) }
+        let subExpressions = expressions.unfoldSubSequences(limitedTo: 2).map { reducedExpression(for: Array($0)) }
         return reducedExpression(for: subExpressions)
     }
     
@@ -68,16 +68,18 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
     public typealias Expr = LogicalExpression<Root>
     public typealias Attribute = CompoundAttribute<Expr>
     
-    @Binding var expression: Expr
+    public var expression: Binding<Expr>
     var parent: Binding<LogicalExpression<Root>>?
     
     @Environment(PredicateViewConfiguration<Root>.self) private var configuration
     
     public init(expression: Binding<LogicalExpression<Root>>) {
-        self._expression = expression
+        self.expression = expression
     }
     
     public var body: some View {
+        @Binding(projectedValue: expression) var expression
+        
         TokenView(Root.self) {
             Text("Group")
         } content: {
@@ -89,7 +91,7 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
             
             Divider()
             
-            expression.operatorPickerView(using: $expression.attribute)
+            Expr.operatorPickerView(using: $expression.attribute.operator)
                 .preference(
                     key: PredicateAttributePreferenceKey.self,
                     value: [expression.id: expression.currentValue]
@@ -132,6 +134,8 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
     
     @ViewBuilder
     private var menuItems: some View {
+        @Binding(projectedValue: expression) var expression
+        
         Menu("New Group") {
             ForEach(LogicalExpression<Root>.Operator.allCases, id: \.self) { option in
                 Button(option.rawValue.capitalized) {
@@ -155,9 +159,9 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
     
     private func childView(for child: Binding<any Expression<Root>>) -> some View {
         func _view<T: Expression>(for expression: T) -> any View where T.Root == Root {
-            expression.makeView(
+            T.makeView(
                 for: Binding(get: { child.wrappedValue as! T }, set: { child.wrappedValue = $0 }),
-                parent: self.$expression
+                parent: self.expression
             )
             .preference(
                 key: PredicateAttributePreferenceKey.self,

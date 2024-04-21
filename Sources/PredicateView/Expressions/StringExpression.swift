@@ -7,54 +7,56 @@
 
 import SwiftUI
 
-struct StringExpression<Root>: SimpleExpression {
-    typealias ExprView = StringExpressionView<Root>
+extension AnyExpression {
+    public init(keyPath: KeyPath<Root, String>, title: String) {
+        self.wrappedValue = StringExpression(keyPath: keyPath, title: title)
+    }
     
+    public init(keyPath: KeyPath<Root, String?>, title: String) {
+        self.wrappedValue = OptionalExpression<Root, StringExpression>(keyPath: keyPath, title: title)
+    }
+}
+
+struct StringExpression<Root>: ContentExpression {
     enum Operator: String, CaseIterable {
         case equals = "equals"
         case contains = "contains"
         case beginsWith = "begins with"
     }
     
+    static var defaultAttribute: ExpressionAttribute<Self> { .init(operator: .contains, value: "") }
+    
     var id = UUID()
     let keyPath: KeyPath<Root, String>
     let title: String
-    var attribute: ExpressionAttribute<Self> = .init(operator: .contains, value: "")
+    var attribute: ExpressionAttribute<Self> = Self.defaultAttribute
     
-    func buildPredicate(using input: PredicateExpressions.Variable<Root>) -> (any StandardPredicateExpression<Bool>)? {
-        guard !attribute.value.isEmpty else { return nil }
-        return switch attribute.operator {
+    static func buildPredicate<V>(
+        for variable: V,
+        using value: Value,
+        operation: Operator
+    ) -> (any StandardPredicateExpression<Bool>)? where V: StandardPredicateExpression<Value> {
+        guard !value.isEmpty else { return nil }
+        return switch operation {
         case .equals:
             PredicateExpressions.Equal(
-                lhs: PredicateExpressions.KeyPath(root: input, keyPath: keyPath),
-                rhs: PredicateExpressions.Value(attribute.value)
+                lhs: variable,
+                rhs: PredicateExpressions.Value(value)
             )
         case .contains:
             PredicateExpressions.StringLocalizedStandardContains(
-                root: PredicateExpressions.KeyPath(root: input, keyPath: keyPath),
-                other: PredicateExpressions.Value(attribute.value)
+                root: variable,
+                other: PredicateExpressions.Value(value)
             )
         case .beginsWith:
             PredicateExpressions.SequenceStartsWith(
-                base: PredicateExpressions.KeyPath(root: input, keyPath: keyPath),
-                prefix: PredicateExpressions.Value(attribute.value)
+                base: variable,
+                prefix: PredicateExpressions.Value(value)
             )
         }
     }
-}
-
-struct StringExpressionView<Root>: ExpressionView {
-    typealias Expression = StringExpression<Root>
     
-    @Binding var expression: Expression
-    
-    var body: some View {
-        TokenView(Root.self, header: {
-            Text("\(expression.title) \(expression.attribute.operator.rawValue)")
-        }, content: {
-            TextField("Value", text: $expression.attribute.value)
-        }, menu: {
-            expression.operatorPickerView(using: $expression.attribute)
-        })
+    static func makeContentView(_ value: Binding<Value>) -> some View {
+        TextField("Value", text: value)
     }
 }

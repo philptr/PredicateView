@@ -7,9 +7,17 @@
 
 import SwiftUI
 
-struct BoolExpression<Root>: SimpleExpression {
-    typealias ExprView = BoolExpressionView<Root>
+extension AnyExpression {
+    public init(keyPath: KeyPath<Root, Bool>, title: String) {
+        self.wrappedValue = BoolExpression(keyPath: keyPath, title: title)
+    }
     
+    public init(keyPath: KeyPath<Root, Bool?>, title: String) {
+        self.wrappedValue = OptionalExpression<Root, BoolExpression>(keyPath: keyPath, title: title)
+    }
+}
+
+struct BoolExpression<Root>: ContentExpression {
     enum Operator: String, CaseIterable {
         case `is` = "is"
         case isNot = "is not"
@@ -29,47 +37,40 @@ struct BoolExpression<Root>: SimpleExpression {
         }
     }
     
+    static var defaultAttribute: ExpressionAttribute<Self> { .init(operator: .is, value: true) }
+    
     var id = UUID()
     let keyPath: KeyPath<Root, Bool>
     let title: String
-    var attribute: ExpressionAttribute<Self> = .init(operator: .is, value: true)
+    var attribute: ExpressionAttribute<Self> = Self.defaultAttribute
     
-    func buildPredicate(using input: PredicateExpressions.Variable<Root>) -> (any StandardPredicateExpression<Bool>)? {
-        switch attribute.operator {
+    static func buildPredicate<V>(
+        for variable: V,
+        using value: Value,
+        operation: Operator
+    ) -> (any StandardPredicateExpression<Bool>)? where V: StandardPredicateExpression<Value> {
+        switch operation {
         case .is:
             PredicateExpressions.Equal(
-                lhs: PredicateExpressions.KeyPath(root: input, keyPath: keyPath),
-                rhs: PredicateExpressions.Value(attribute.value)
+                lhs: variable,
+                rhs: PredicateExpressions.Value(value)
             )
         case .isNot:
             PredicateExpressions.NotEqual(
-                lhs: PredicateExpressions.KeyPath(root: input, keyPath: keyPath),
-                rhs: PredicateExpressions.Value(attribute.value)
+                lhs: variable,
+                rhs: PredicateExpressions.Value(value)
             )
         }
     }
-}
-
-struct BoolExpressionView<Root>: ExpressionView {
-    typealias Expression = BoolExpression<Root>
     
-    @Binding var expression: Expression
-    
-    var body: some View {
-        TokenView(Root.self, header: {
-            Text("\(expression.title) \(expression.attribute.operator.rawValue)")
-        }, content: {
-            Picker("Value", selection: $expression.attribute.value) {
-                ForEach(Expression.Operator.allCases, id: \.self) {
-                    Text($0.label)
-                        .tag($0.associatedValue)
-                }
+    static func makeContentView(_ value: Binding<Bool>) -> some View {
+        Picker("Value", selection: value) {
+            ForEach(Operator.allCases, id: \.self) { expression in
+                Text(expression.label)
+                    .tag(expression.associatedValue)
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-        }, menu: {
-            expression.operatorPickerView(using: $expression.attribute)
-        })
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
     }
 }
-

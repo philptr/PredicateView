@@ -9,10 +9,10 @@ import Foundation
 
 @Observable
 final class PredicateViewConfiguration<Root> {
-    var rowTemplates: [any SimpleExpression<Root>]
+    var rowTemplates: [any ValueExpression<Root>]
     var isEditable: Bool
     
-    init(rowTemplates: [any SimpleExpression<Root>], isEditable: Bool) {
+    init(rowTemplates: [any ValueExpression<Root>], isEditable: Bool) {
         self.rowTemplates = rowTemplates
         self.isEditable = isEditable
     }

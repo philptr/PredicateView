@@ -1,25 +1,25 @@
 //
-//  EnumExpression.swift
-//  PredicateView
+//  RawRepresentableEnumExpression.swift
+//  
 //
-//  Created by Phil Zakharchenko on 3/3/24.
+//  Created by Phil Zakharchenko on 4/20/24.
 //
 
 import SwiftUI
 
-public typealias EnumExpressionCompatible = CaseIterable & CustomStringConvertible & Identifiable & ExpressionCompatible
+public typealias RawRepresentableExpressionCompatible = CaseIterable & RawRepresentable & ExpressionCompatible
 
 extension AnyExpression {
-    public init<T>(keyPath: KeyPath<Root, T>, title: String) where T: EnumExpressionCompatible, T.AllCases: RandomAccessCollection {
-        self.wrappedValue = EnumExpression(keyPath: keyPath, title: title)
+    public init<T>(keyPath: KeyPath<Root, T>, title: String) where T: RawRepresentableExpressionCompatible, T.AllCases: RandomAccessCollection, T.RawValue: StringProtocol {
+        self.wrappedValue = RawRepresentableEnumExpression(keyPath: keyPath, title: title)
     }
     
-    public init<T>(keyPath: KeyPath<Root, T?>, title: String) where T: EnumExpressionCompatible, T.AllCases: RandomAccessCollection {
-        self.wrappedValue = OptionalExpression<Root, EnumExpression>(keyPath: keyPath, title: title)
+    public init<T>(keyPath: KeyPath<Root, T?>, title: String) where T: RawRepresentableExpressionCompatible, T.AllCases: RandomAccessCollection, T.RawValue: StringProtocol {
+        self.wrappedValue = OptionalExpression<Root, RawRepresentableEnumExpression>(keyPath: keyPath, title: title)
     }
 }
 
-struct EnumExpression<Root, EnumType>: ContentExpression where EnumType: EnumExpressionCompatible, EnumType.AllCases: RandomAccessCollection {
+struct RawRepresentableEnumExpression<Root, EnumType>: ContentExpression where EnumType: RawRepresentableExpressionCompatible, EnumType.AllCases: RandomAccessCollection, EnumType.RawValue: StringProtocol {
     enum Operator: String, CaseIterable {
         case `is` = "is"
         case isNot = "is not"
@@ -50,19 +50,19 @@ struct EnumExpression<Root, EnumType>: ContentExpression where EnumType: EnumExp
             )
         }
     }
-    
+
     static func makeContentView(_ value: Binding<EnumType>) -> some View {
         Picker("Value", selection: value) {
-            CustomStringConvertibleEnumPicker<EnumType>()
+            RawRepresentableEnumPicker<EnumType>()
         }
         .labelsHidden()
     }
 }
 
-private struct CustomStringConvertibleEnumPicker<EnumType>: View where EnumType: EnumExpressionCompatible, EnumType.AllCases: RandomAccessCollection {
+private struct RawRepresentableEnumPicker<EnumType>: View where EnumType: RawRepresentableExpressionCompatible, EnumType.AllCases: RandomAccessCollection, EnumType.RawValue: StringProtocol {
     var body: some View {
         ForEach(EnumType.allCases, id: \.self) { option in
-            Text(option.description).tag(option)
+            Text(option.rawValue).tag(option)
         }
     }
 }
