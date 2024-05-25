@@ -9,15 +9,17 @@ import SwiftUI
 
 extension AnyExpression {
     public init(keyPath: KeyPath<Root, Bool>, title: String) {
-        self.wrappedValue = BoolExpression(keyPath: keyPath, title: title)
+        self.init(wrappedValue: BoolExpression(keyPath: keyPath, title: title))
     }
     
     public init(keyPath: KeyPath<Root, Bool?>, title: String) {
-        self.wrappedValue = OptionalExpression<Root, BoolExpression>(keyPath: keyPath, title: title)
+        self.init(wrappedValue: OptionalExpression<Root, BoolExpression>(keyPath: keyPath, title: title))
     }
 }
 
 struct BoolExpression<Root>: ContentExpression {
+    typealias AttributeValue = Bool
+    
     enum Operator: String, CaseIterable {
         case `is` = "is"
         case isNot = "is not"
@@ -37,28 +39,27 @@ struct BoolExpression<Root>: ContentExpression {
         }
     }
     
-    static var defaultAttribute: ExpressionAttribute<Self> { .init(operator: .is, value: true) }
+    static var defaultAttribute: StandardAttribute<Self> { .init(operator: .is, value: true) }
     
     var id = UUID()
     let keyPath: KeyPath<Root, Bool>
     let title: String
-    var attribute: ExpressionAttribute<Self> = Self.defaultAttribute
+    var attribute: StandardAttribute<Self> = Self.defaultAttribute
     
     static func buildPredicate<V>(
         for variable: V,
-        using value: Value,
-        operation: Operator
+        using attribute: StandardAttribute<Self>
     ) -> (any StandardPredicateExpression<Bool>)? where V: StandardPredicateExpression<Value> {
-        switch operation {
+        switch attribute.operator {
         case .is:
             PredicateExpressions.Equal(
                 lhs: variable,
-                rhs: PredicateExpressions.Value(value)
+                rhs: PredicateExpressions.Value(attribute.value)
             )
         case .isNot:
             PredicateExpressions.NotEqual(
                 lhs: variable,
-                rhs: PredicateExpressions.Value(value)
+                rhs: PredicateExpressions.Value(attribute.value)
             )
         }
     }

@@ -19,6 +19,7 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
     
     @State var isDeleted: Bool = false
     
+    @Environment(\.isEnabled) private var isEnabled
     @Environment(PredicateViewConfiguration<Root>.self) private var configuration
     @FocusState private var contentFocus: ContentState?
     
@@ -55,7 +56,7 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
             }
             .padding(4)
             
-            if configuration.isEditable {
+            if isEnabled {
                 widget
                 
                 Menu("") { menuItems }
@@ -67,19 +68,16 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
         }
         .contentShape(.rect)
         .contextMenu(menuItems: {
-            if configuration.isEditable {
+            if isEnabled {
                 menuItems
             }
         })
         .background {
             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
-                .background(
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .foregroundStyle(Color.accentColor.opacity(0.1))
-                )
+                .strokeBorder(Color.accentColor.opacity(0.3), lineWidth: 1)
+                .fill(Color.accentColor.opacity(0.1))
         }
-        .disabled(!configuration.isEditable)
+        .disabled(!isEnabled)
     }
     
     @ViewBuilder

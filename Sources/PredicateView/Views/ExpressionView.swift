@@ -29,3 +29,18 @@ public protocol HierarchicalExpressionView<Expr>: ExpressionView {
     init(expression: Binding<Expr>, parent: Binding<LogicalExpression<Root>>?)
 }
 
+extension HierarchicalExpressionView {
+    func childView<Element>(for child: Binding<any Expression<Element>>) -> some View {
+        func _view<T: Expression>(for expression: T) -> any View where T.Root == Element {
+            T.makeView(
+                for: Binding(get: { child.wrappedValue as! T }, set: { child.wrappedValue = $0 })
+            )
+            .preference(
+                key: PredicateAttributePreferenceKey.self,
+                value: [expression.id: expression.currentValue]
+            )
+        }
+        
+        return AnyView(_view(for: child.wrappedValue))
+    }
+}

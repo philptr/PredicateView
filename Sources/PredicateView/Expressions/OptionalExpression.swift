@@ -14,27 +14,21 @@ struct OptionalExpression<Root, WrappedExpression>: ExpressionWrapper where Wrap
         case exists = "exists"
         case doesNotExist = "has no value"
         
-        var usesWrappedValue: Bool {
-            switch self {
-            case .exists: true
-            case .doesNotExist: false
-            }
-        }
+        var exists: Bool { self == .exists }
     }
     
     var id = UUID()
     let keyPath: KeyPath<Root, WrappedExpression.Value?>
     var title: String
-    var attribute: ExpressionAttribute<WrappedExpression>? = WrappedExpression.defaultAttribute
+    var attribute: WrappedExpression.Attribute? = WrappedExpression.defaultAttribute
     var `operator`: Operator = .exists {
         willSet { attribute = nil }
     }
     
     static func buildPredicate<V>(
         for variable: V,
-        using value: WrappedExpression.Value?,
-        wrappedOperation: WrappedExpression.Operator?,
-        operation: Operator
+        using wrappedAttribute: WrappedExpression.Attribute?,
+        operator: Operator
     ) -> (any StandardPredicateExpression<Bool>)? where V: StandardPredicateExpression<Value> {
         func nilCoalesced<T: StandardPredicateExpression<Bool>>(
             expression: T
@@ -45,12 +39,11 @@ struct OptionalExpression<Root, WrappedExpression>: ExpressionWrapper where Wrap
             )
         }
         
-        switch operation {
+        switch `operator` {
         case .exists:
             let forceUnwrapped = PredicateExpressions.ForcedUnwrap(variable)
-            guard let value,
-                  let wrappedOperation,
-                  let expression = WrappedExpression.buildPredicate(for: forceUnwrapped, using: value, operation: wrappedOperation) else {
+            guard let wrappedAttribute,
+                  let expression = WrappedExpression.buildPredicate(for: forceUnwrapped, using: wrappedAttribute) else {
                 return PredicateExpressions.NotEqual(
                     lhs: variable,
                     rhs: PredicateExpressions.NilLiteral()
@@ -76,13 +69,13 @@ struct OptionalExpressionView<Root, WrappedExpression: ContentExpression<Root>>:
         @Binding(projectedValue: expression) var expression
         
         TokenView(Root.self, header: {
-            if expression.operator.usesWrappedValue, let attr = expression.attribute {
+            if expression.operator.exists, let attr = expression.attribute {
                 Text("\(expression.title) \(attr.operator.rawValue)")
             } else {
                 Text(expression.title)
             }
         }, content: {
-            if expression.operator.usesWrappedValue, let attr = expression.attribute {
+            if expression.operator.exists, let attr = expression.attribute {
                 WrappedExpression.makeContentView(.init(get: {
                     attr.value
                 }, set: {
@@ -92,12 +85,12 @@ struct OptionalExpressionView<Root, WrappedExpression: ContentExpression<Root>>:
                 Text(expression.operator.rawValue)
             }
         }, menu: {
-            Expression.operatorPickerView(using: $expression.operator) { option in
-                if option.usesWrappedValue {
+            Expression.makeOperatorMenu(using: $expression.operator) { option in
+                if option.exists {
                     VStack {
                         Button(option.rawValue) { }
                         
-                        WrappedExpression.operatorPickerView(using: .init(get: {
+                        WrappedExpression.makeOperatorMenu(using: .init(get: {
                             expression.attribute?.operator
                         }, set: { newValue in
                             guard let newValue else { return }
@@ -118,4 +111,3 @@ struct OptionalExpressionView<Root, WrappedExpression: ContentExpression<Root>>:
         })
     }
 }
-

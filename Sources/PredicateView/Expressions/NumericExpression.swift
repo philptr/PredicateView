@@ -11,15 +11,17 @@ public typealias NumericExpressionCompatible = Numeric & Strideable & Expression
 
 extension AnyExpression {
     public init<T>(keyPath: KeyPath<Root, T>, title: String) where T: NumericExpressionCompatible {
-        self.wrappedValue = NumericExpression(keyPath: keyPath, title: title)
+        self.init(wrappedValue: NumericExpression(keyPath: keyPath, title: title))
     }
     
     public init<T>(keyPath: KeyPath<Root, T?>, title: String) where T: NumericExpressionCompatible {
-        self.wrappedValue = OptionalExpression<Root, NumericExpression>(keyPath: keyPath, title: title)
+        self.init(wrappedValue: OptionalExpression<Root, NumericExpression>(keyPath: keyPath, title: title))
     }
 }
 
 struct NumericExpression<Root, Number>: ContentExpression where Number: NumericExpressionCompatible {
+    typealias AttributeValue = Number
+    
     enum Operator: String, CaseIterable {
         case equals = "equals"
         case isLessThan = "is less than"
@@ -28,26 +30,25 @@ struct NumericExpression<Root, Number>: ContentExpression where Number: NumericE
         case isGreaterThanOrEqual = "is greater than or equal"
     }
     
-    static var defaultAttribute: ExpressionAttribute<Self> { .init(operator: .equals, value: 0) }
+    static var defaultAttribute: StandardAttribute<Self> { .init(operator: .equals, value: 0) }
     
     var id = UUID()
     let keyPath: KeyPath<Root, Number>
     let title: String
-    var attribute: ExpressionAttribute<Self> = Self.defaultAttribute
+    var attribute: StandardAttribute<Self> = Self.defaultAttribute
     
     static func buildPredicate<V>(
         for variable: V,
-        using value: Value,
-        operation: Operator
+        using attribute: StandardAttribute<Self>
     ) -> (any StandardPredicateExpression<Bool>)? where V: StandardPredicateExpression<Value> {
-        switch operation {
+        switch attribute.operator {
         case .equals:
             return PredicateExpressions.Equal(
                 lhs: variable,
-                rhs: PredicateExpressions.Value(value)
+                rhs: PredicateExpressions.Value(attribute.value)
             )
         default:
-            let comparisonOperator: PredicateExpressions.ComparisonOperator? = switch operation {
+            let comparisonOperator: PredicateExpressions.ComparisonOperator? = switch attribute.operator {
             case .isLessThan:
                 .lessThan
             case .isGreaterThan:
@@ -62,7 +63,7 @@ struct NumericExpression<Root, Number>: ContentExpression where Number: NumericE
             guard let comparisonOperator else { return nil }
             return PredicateExpressions.Comparison(
                 lhs: variable,
-                rhs: PredicateExpressions.Value(value),
+                rhs: PredicateExpressions.Value(attribute.value),
                 op: comparisonOperator
             )
         }

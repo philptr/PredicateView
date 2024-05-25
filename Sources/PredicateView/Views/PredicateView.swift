@@ -13,10 +13,10 @@ public struct PredicateView<Root>: View {
     @State private var rootExpression: LogicalExpression<Root> = .init(children: [])
     @Bindable private var configuration: PredicateViewConfiguration<Root>
     
-    public init(predicate: Binding<Predicate<Root>>, rowTemplates: [AnyExpression<Root>], isEditable: Bool = true) {
+    public init(predicate: Binding<Predicate<Root>>, rowTemplates: [AnyExpression<Root>]) {
         self._predicate = predicate
         let templates = rowTemplates.map(\.wrappedValue)
-        self.configuration = PredicateViewConfiguration(rowTemplates: templates, isEditable: isEditable)
+        self.configuration = PredicateViewConfiguration(rowTemplates: templates)
     }
     
     public var body: some View {

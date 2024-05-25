@@ -14,10 +14,10 @@ public protocol ContentExpression<Root>: SimpleExpression {
     associatedtype Result: View
     
     @ViewBuilder
-    static func makeContentView(_ value: Binding<Value>) -> Result
+    static func makeContentView(_ value: Binding<AttributeValue>) -> Result
 }
 
-// MARK: - StandardValueExpressionView
+// MARK: - ContentExpressionView
 
 public struct ContentExpressionView<Root, Expr: ContentExpression<Root>>: ExpressionView {
     public var expression: Binding<Expr>
@@ -34,7 +34,7 @@ public struct ContentExpressionView<Root, Expr: ContentExpression<Root>>: Expres
         }, content: {
             Expr.makeContentView($expression.attribute.value)
         }, menu: {
-            Expr.operatorPickerView(using: $expression.attribute.operator)
+            Expr.makeOperatorMenu(using: $expression.attribute.operator)
         })
     }
 }

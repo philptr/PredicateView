@@ -9,49 +9,50 @@ import SwiftUI
 
 extension AnyExpression {
     public init(keyPath: KeyPath<Root, String>, title: String) {
-        self.wrappedValue = StringExpression(keyPath: keyPath, title: title)
+        self.init(wrappedValue: StringExpression(keyPath: keyPath, title: title))
     }
     
     public init(keyPath: KeyPath<Root, String?>, title: String) {
-        self.wrappedValue = OptionalExpression<Root, StringExpression>(keyPath: keyPath, title: title)
+        self.init(wrappedValue: OptionalExpression<Root, StringExpression>(keyPath: keyPath, title: title))
     }
 }
 
 struct StringExpression<Root>: ContentExpression {
+    typealias AttributeValue = String
+    
     enum Operator: String, CaseIterable {
         case equals = "equals"
         case contains = "contains"
         case beginsWith = "begins with"
     }
     
-    static var defaultAttribute: ExpressionAttribute<Self> { .init(operator: .contains, value: "") }
+    static var defaultAttribute: StandardAttribute<Self> { .init(operator: .contains, value: "") }
     
     var id = UUID()
     let keyPath: KeyPath<Root, String>
     let title: String
-    var attribute: ExpressionAttribute<Self> = Self.defaultAttribute
+    var attribute: StandardAttribute<Self> = Self.defaultAttribute
     
     static func buildPredicate<V>(
         for variable: V,
-        using value: Value,
-        operation: Operator
+        using attribute: StandardAttribute<Self>
     ) -> (any StandardPredicateExpression<Bool>)? where V: StandardPredicateExpression<Value> {
-        guard !value.isEmpty else { return nil }
-        return switch operation {
+        guard !attribute.value.isEmpty else { return nil }
+        return switch attribute.operator {
         case .equals:
             PredicateExpressions.Equal(
                 lhs: variable,
-                rhs: PredicateExpressions.Value(value)
+                rhs: PredicateExpressions.Value(attribute.value)
             )
         case .contains:
             PredicateExpressions.StringLocalizedStandardContains(
                 root: variable,
-                other: PredicateExpressions.Value(value)
+                other: PredicateExpressions.Value(attribute.value)
             )
         case .beginsWith:
             PredicateExpressions.SequenceStartsWith(
                 base: variable,
-                prefix: PredicateExpressions.Value(value)
+                prefix: PredicateExpressions.Value(attribute.value)
             )
         }
     }

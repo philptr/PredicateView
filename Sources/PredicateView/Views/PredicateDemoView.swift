@@ -10,11 +10,17 @@ import SwiftUI
 public struct PredicateDemoView: View {
     struct Model: Identifiable {
         enum EmploymentStatus: String, CaseIterable, Codable {
-            case employed
-            case unemployed
-            case selfEmployed
-            case student
-            case other
+            case employed, unemployed, selfEmployed, student, other
+        }
+        
+        struct Color: Identifiable, Codable, Hashable {
+            enum Name: String, CaseIterable, Codable {
+                case red, green, blue, purple, orange, yellow, black, white, brown, pink
+            }
+            
+            var id = UUID()
+            let name: Name
+            let cost: Float
         }
         
         let id = UUID()
@@ -22,8 +28,9 @@ public struct PredicateDemoView: View {
         let lastName: String
         let age: Int
         let location: String
-        let employmentStatus: EmploymentStatus
+        let employmentStatus: EmploymentStatus?
         let isRegistered: Bool
+        let preferredColors: [Color]
         
         var fullName: String {
             firstName + " " + lastName
@@ -44,10 +51,15 @@ public struct PredicateDemoView: View {
             let lastName = lastNames.randomElement()!
             let age = Int.random(in: 18...60)
             let location = locations.randomElement()!
-            let employmentStatus = Model.EmploymentStatus.allCases.randomElement()!
+            let employmentStatus = (Model.EmploymentStatus.allCases + [nil]).randomElement()!
             let isRegistered = Bool.random()
             
-            let model = Model(firstName: firstName, lastName: lastName, age: age, location: location, employmentStatus: employmentStatus, isRegistered: isRegistered)
+            let colorCount = Int.random(in: 0..<Model.Color.Name.allCases.count)
+            let preferredColors = (0..<colorCount).map { _ in
+                Model.Color(name: Model.Color.Name.allCases.randomElement()!, cost: Float.random(in: 1..<10))
+            }
+            
+            let model = Model(firstName: firstName, lastName: lastName, age: age, location: location, employmentStatus: employmentStatus, isRegistered: isRegistered, preferredColors: preferredColors)
             data.append(model)
         }
         
@@ -59,19 +71,22 @@ public struct PredicateDemoView: View {
             PredicateView(predicate: $predicate, rowTemplates: [
                 .init(keyPath: \.firstName, title: "First Name"),
                 .init(keyPath: \.lastName, title: "Last Name"),
-                .init(keyPath: \.fullName, title: "Full Name"),
                 .init(keyPath: \.location, title: "Location"),
                 .init(keyPath: \.age, title: "Age"),
                 .init(keyPath: \.employmentStatus, title: "Employment Status"),
-                .init(keyPath: \.isRegistered, title: "Registration Status")
+                .init(keyPath: \.isRegistered, title: "Registration Status"),
+                .init(keyPath: \.preferredColors, title: "Preferred Colors", rowTemplates: [
+                    .init(keyPath: \.name, title: "Name"),
+                    .init(keyPath: \.cost, title: "Cost"),
+                ])
             ])
             
-            FilteredListView(predicate: $predicate, data: $data)
+            FilteredResultsTable(predicate: $predicate, data: $data)
         }
         .padding()
     }
 
-    private struct FilteredListView: View {
+    private struct FilteredResultsTable: View {
         @Binding var predicate: Predicate<Model>
         @Binding var data: [Model]
         
@@ -80,11 +95,42 @@ public struct PredicateDemoView: View {
                 TableColumn("Full Name", value: \.fullName)
                 TableColumn("Age", value: \.age.description)
                 TableColumn("Location", value: \.location)
-                TableColumn("Employment Status", value: \.employmentStatus.rawValue)
+                TableColumn("Employment Status") { model in
+                    if let employmentStatus = model.employmentStatus?.rawValue {
+                        Text(employmentStatus)
+                    } else {
+                        Image(systemName: "questionmark")
+                    }
+                }
                 TableColumn("Registered") { model in
                     Image(systemName: model.isRegistered ? "checkmark" : "xmark")
                 }
+                TableColumn("Preferred Colors") { model in
+                    ScrollView(.horizontal) {
+                        HStack(spacing: 2) {
+                            ForEach(model.preferredColors) { color in
+                                HStack(spacing: 2) {
+                                    Text(color.name.rawValue.capitalized)
+                                    Text("$" + String(format: "%.2f", color.cost))
+                                        .foregroundStyle(.secondary)
+                                }
+                                .font(.caption)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 2)
+                                .background {
+                                    Capsule()
+                                        .strokeBorder(Color.accentColor.opacity(0.3), lineWidth: 1)
+                                        .fill(Color.accentColor.opacity(0.1))
+                                }
+                            }
+                        }
+                    }
+                    .scrollIndicators(.hidden)
+                }
             }
+            
+            Text("\(filteredData.count) results found")
+                .font(.footnote)
         }
         
         private var filteredData: [Model] {

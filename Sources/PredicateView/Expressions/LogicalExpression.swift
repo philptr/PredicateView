@@ -71,6 +71,7 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
     public var expression: Binding<Expr>
     var parent: Binding<LogicalExpression<Root>>?
     
+    @Environment(\.isEnabled) private var isEnabled
     @Environment(PredicateViewConfiguration<Root>.self) private var configuration
     
     public init(expression: Binding<LogicalExpression<Root>>) {
@@ -91,7 +92,7 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
             
             Divider()
             
-            Expr.operatorPickerView(using: $expression.attribute.operator)
+            Expr.makeOperatorMenu(using: $expression.attribute.operator)
                 .preference(
                     key: PredicateAttributePreferenceKey.self,
                     value: [expression.id: expression.currentValue]
@@ -121,7 +122,7 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
                     }
             }
             
-            if configuration.isEditable {
+            if isEnabled {
                 MenuButton(label: Image(systemName: "plus.circle")) {
                     menuItems
                 }
@@ -155,20 +156,5 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
                 expression.children.append(copy)
             }
         }
-    }
-    
-    private func childView(for child: Binding<any Expression<Root>>) -> some View {
-        func _view<T: Expression>(for expression: T) -> any View where T.Root == Root {
-            T.makeView(
-                for: Binding(get: { child.wrappedValue as! T }, set: { child.wrappedValue = $0 }),
-                parent: self.expression
-            )
-            .preference(
-                key: PredicateAttributePreferenceKey.self,
-                value: [expression.id: expression.currentValue]
-            )
-        }
-        
-        return AnyView(_view(for: child.wrappedValue))
     }
 }

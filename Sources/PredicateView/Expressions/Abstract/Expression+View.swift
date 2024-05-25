@@ -9,17 +9,17 @@ import SwiftUI
 
 extension Expression {
     @ViewBuilder
-    public static func operatorPickerView<T: Hashable>(
+    public static func makeOperatorMenu<T: Hashable>(
         using operation: Binding<T>
     ) -> some View {
-        operatorPickerView(using: operation) { option in
+        makeOperatorMenu(using: operation) { option in
             Text(option.rawValue)
                 .tag(option as! T)
         }
     }
     
     @ViewBuilder
-    public static func operatorPickerView<T: Hashable>(
+    public static func makeOperatorMenu<T: Hashable>(
         using operation: Binding<T>,
         @ViewBuilder itemProvider: @escaping (Operator) -> some View
     ) -> some View {
@@ -30,6 +30,7 @@ extension Expression {
             }
         }
         .pickerStyle(.inline)
+        .labelsHidden()
     }
     
     public static func makeView(for expression: Binding<Self>) -> some ExpressionView {

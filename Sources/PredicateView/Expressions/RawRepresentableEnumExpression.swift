@@ -11,42 +11,43 @@ public typealias RawRepresentableExpressionCompatible = CaseIterable & RawRepres
 
 extension AnyExpression {
     public init<T>(keyPath: KeyPath<Root, T>, title: String) where T: RawRepresentableExpressionCompatible, T.AllCases: RandomAccessCollection, T.RawValue: StringProtocol {
-        self.wrappedValue = RawRepresentableEnumExpression(keyPath: keyPath, title: title)
+        self.init(wrappedValue: RawRepresentableEnumExpression(keyPath: keyPath, title: title))
     }
     
     public init<T>(keyPath: KeyPath<Root, T?>, title: String) where T: RawRepresentableExpressionCompatible, T.AllCases: RandomAccessCollection, T.RawValue: StringProtocol {
-        self.wrappedValue = OptionalExpression<Root, RawRepresentableEnumExpression>(keyPath: keyPath, title: title)
+        self.init(wrappedValue: OptionalExpression<Root, RawRepresentableEnumExpression>(keyPath: keyPath, title: title))
     }
 }
 
 struct RawRepresentableEnumExpression<Root, EnumType>: ContentExpression where EnumType: RawRepresentableExpressionCompatible, EnumType.AllCases: RandomAccessCollection, EnumType.RawValue: StringProtocol {
+    typealias AttributeValue = EnumType
+    
     enum Operator: String, CaseIterable {
         case `is` = "is"
         case isNot = "is not"
     }
     
-    static var defaultAttribute: ExpressionAttribute<Self> { .init(operator: .is, value: EnumType.allCases.first!) }
+    static var defaultAttribute: StandardAttribute<Self> { .init(operator: .is, value: EnumType.allCases.first!) }
     
     var id = UUID()
     let keyPath: KeyPath<Root, EnumType>
     let title: String
-    var attribute: ExpressionAttribute<Self> = Self.defaultAttribute
+    var attribute: StandardAttribute<Self> = Self.defaultAttribute
     
     static func buildPredicate<V>(
         for variable: V,
-        using value: Value,
-        operation: Operator
+        using attribute: StandardAttribute<Self>
     ) -> (any StandardPredicateExpression<Bool>)? where V: StandardPredicateExpression<Value> {
-        switch operation {
+        switch attribute.operator {
         case .is:
             PredicateExpressions.Equal(
                 lhs: variable,
-                rhs: PredicateExpressions.Value(value)
+                rhs: PredicateExpressions.Value(attribute.value)
             )
         case .isNot:
             PredicateExpressions.NotEqual(
                 lhs: variable,
-                rhs: PredicateExpressions.Value(value)
+                rhs: PredicateExpressions.Value(attribute.value)
             )
         }
     }
