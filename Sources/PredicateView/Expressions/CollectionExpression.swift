@@ -144,12 +144,7 @@ public struct CollectionExpressionView<Root, C>: HierarchicalExpressionView wher
             }
             
             if isEnabled {
-                MenuButton(label: Image(systemName: "plus.circle")) {
-                    menuItems
-                }
-                .tint(.accentColor)
-                .fixedSize()
-                .menuButtonStyle(BorderlessButtonMenuButtonStyle())
+                NewItemMenuButton { menuItems }
             }
         }
     }

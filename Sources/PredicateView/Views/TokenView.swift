@@ -60,7 +60,13 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
                     .preference(key: PredicateDeletedStatusPreferenceKey.self, value: isDeleted)
             }
         }
-        .contentShape(.rect)
+        .background {
+            shape
+                .strokeBorder(Color.accentColor.opacity(0.3), lineWidth: 1)
+                .fill(Color.accentColor.opacity(isFocused ? 0.15 : 0.1))
+        }
+        .contentShape(shape)
+        .contentShape(.contextMenuPreview, shape)
         .onTapGesture {
             isFocused = true
         }
@@ -68,11 +74,6 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
             if isEnabled {
                 menuItems
             }
-        }
-        .background {
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .strokeBorder(Color.accentColor.opacity(0.3), lineWidth: 1)
-                .fill(Color.accentColor.opacity(isFocused ? 0.15 : 0.1))
         }
         .disabled(!isEnabled)
     }
@@ -86,5 +87,9 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
         Button("Remove") {
             isDeleted = true
         }
+    }
+    
+    private var shape: some InsettableShape {
+        RoundedRectangle(cornerRadius: 6, style: .continuous)
     }
 }

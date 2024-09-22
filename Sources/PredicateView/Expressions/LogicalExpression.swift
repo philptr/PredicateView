@@ -123,12 +123,7 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
             }
             
             if isEnabled {
-                MenuButton(label: Image(systemName: "plus.circle")) {
-                    menuItems
-                }
-                .tint(.accentColor)
-                .fixedSize()
-                .menuButtonStyle(BorderlessButtonMenuButtonStyle())
+                NewItemMenuButton { menuItems }
             }
         }
     }
