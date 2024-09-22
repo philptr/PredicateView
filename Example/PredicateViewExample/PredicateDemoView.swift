@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PredicateView
 
 public struct PredicateDemoView: View {
     struct Model: Identifiable {
@@ -68,18 +69,20 @@ public struct PredicateDemoView: View {
     
     public var body: some View {
         VStack(alignment: .leading) {
-            PredicateView(predicate: $predicate, rowTemplates: [
-                .init(keyPath: \.firstName, title: "First Name"),
-                .init(keyPath: \.lastName, title: "Last Name"),
-                .init(keyPath: \.location, title: "Location"),
-                .init(keyPath: \.age, title: "Age"),
-                .init(keyPath: \.employmentStatus, title: "Employment Status"),
-                .init(keyPath: \.isRegistered, title: "Registration Status"),
-                .init(keyPath: \.preferredColors, title: "Preferred Colors", rowTemplates: [
-                    .init(keyPath: \.name, title: "Name"),
-                    .init(keyPath: \.cost, title: "Cost"),
+            ScrollView(.horizontal) {
+                PredicateView(predicate: $predicate, rowTemplates: [
+                    .init(keyPath: \.firstName, title: "First Name"),
+                    .init(keyPath: \.lastName, title: "Last Name"),
+                    .init(keyPath: \.location, title: "Location"),
+                    .init(keyPath: \.age, title: "Age"),
+                    .init(keyPath: \.employmentStatus, title: "Employment Status"),
+                    .init(keyPath: \.isRegistered, title: "Registration Status"),
+                    .init(keyPath: \.preferredColors, title: "Preferred Colors", rowTemplates: [
+                        .init(keyPath: \.name, title: "Name"),
+                        .init(keyPath: \.cost, title: "Cost"),
+                    ])
                 ])
-            ])
+            }
             
             FilteredResultsTable(predicate: $predicate, data: $data)
         }
@@ -104,6 +107,7 @@ public struct PredicateDemoView: View {
                 }
                 TableColumn("Registered") { model in
                     Image(systemName: model.isRegistered ? "checkmark" : "xmark")
+                        .fontWeight(.medium)
                 }
                 TableColumn("Preferred Colors") { model in
                     ScrollView(.horizontal) {

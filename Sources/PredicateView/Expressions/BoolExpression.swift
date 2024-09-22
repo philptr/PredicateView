@@ -17,10 +17,10 @@ extension AnyExpression {
     }
 }
 
-struct BoolExpression<Root>: ContentExpression {
+struct BoolExpression<Root>: ContentExpression, StaticPredicateExpression {
     typealias AttributeValue = Bool
     
-    enum Operator: String, CaseIterable {
+    enum Operator: String, ExpressionOperator {
         case `is` = "is"
         case isNot = "is not"
         

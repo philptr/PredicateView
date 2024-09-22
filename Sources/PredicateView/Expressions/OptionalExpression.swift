@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct OptionalExpression<Root, WrappedExpression>: ExpressionWrapper where WrappedExpression: ContentExpression<Root> {
+struct OptionalExpression<Root, WrappedExpression>: ExpressionWrapper where WrappedExpression: ContentExpression<Root> & StaticPredicateExpression {
     typealias ExprView = OptionalExpressionView<Root, WrappedExpression>
     
-    enum Operator: String, CaseIterable {
+    enum Operator: String, ExpressionOperator {
         case exists = "exists"
         case doesNotExist = "has no value"
         
@@ -60,7 +60,7 @@ struct OptionalExpression<Root, WrappedExpression>: ExpressionWrapper where Wrap
     }
 }
 
-struct OptionalExpressionView<Root, WrappedExpression: ContentExpression<Root>>: ExpressionView {
+struct OptionalExpressionView<Root, WrappedExpression>: ExpressionView where WrappedExpression: ContentExpression<Root> & StaticPredicateExpression {
     typealias Expression = OptionalExpression<Root, WrappedExpression>
     
     var expression: Binding<Expression>

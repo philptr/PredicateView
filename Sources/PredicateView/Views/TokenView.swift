@@ -8,10 +8,6 @@
 import SwiftUI
 
 struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: View>: View {
-    enum ContentState: Hashable {
-        case focused
-    }
-    
     var header: Header
     var content: Content
     var menu: MenuItems
@@ -21,7 +17,7 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
     
     @Environment(\.isEnabled) private var isEnabled
     @Environment(PredicateViewConfiguration<Root>.self) private var configuration
-    @FocusState private var contentFocus: ContentState?
+    @FocusState private var isFocused: Bool
     
     init(
         _ type: Root.Type,
@@ -42,16 +38,14 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
                 header
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: true, vertical: false)
                 
                 content
                     .textFieldStyle(.plain)
                     .font(.headline)
-                    .fixedSize(horizontal: true, vertical: false)
                     .controlSize(.small)
-                    .focused($contentFocus, equals: .focused)
+                    .focused($isFocused)
                     .onAppear {
-                        contentFocus = .focused
+                        isFocused = true
                     }
             }
             .padding(4)
@@ -67,15 +61,18 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
             }
         }
         .contentShape(.rect)
-        .contextMenu(menuItems: {
+        .onTapGesture {
+            isFocused = true
+        }
+        .contextMenu {
             if isEnabled {
                 menuItems
             }
-        })
+        }
         .background {
             RoundedRectangle(cornerRadius: 6, style: .continuous)
                 .strokeBorder(Color.accentColor.opacity(0.3), lineWidth: 1)
-                .fill(Color.accentColor.opacity(0.1))
+                .fill(Color.accentColor.opacity(isFocused ? 0.15 : 0.1))
         }
         .disabled(!isEnabled)
     }

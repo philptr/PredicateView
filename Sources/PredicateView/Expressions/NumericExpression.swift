@@ -19,10 +19,10 @@ extension AnyExpression {
     }
 }
 
-struct NumericExpression<Root, Number>: ContentExpression where Number: NumericExpressionCompatible {
+struct NumericExpression<Root, Number>: ContentExpression, StaticPredicateExpression where Number: NumericExpressionCompatible {
     typealias AttributeValue = Number
     
-    enum Operator: String, CaseIterable {
+    enum Operator: String, ExpressionOperator {
         case equals = "equals"
         case isLessThan = "is less than"
         case isGreaterThan = "is greater than"

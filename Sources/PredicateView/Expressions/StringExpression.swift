@@ -17,10 +17,10 @@ extension AnyExpression {
     }
 }
 
-struct StringExpression<Root>: ContentExpression {
+struct StringExpression<Root>: ContentExpression, StaticPredicateExpression {
     typealias AttributeValue = String
     
-    enum Operator: String, CaseIterable {
+    enum Operator: String, ExpressionOperator {
         case equals = "equals"
         case contains = "contains"
         case beginsWith = "begins with"

@@ -19,10 +19,10 @@ extension AnyExpression {
     }
 }
 
-struct EnumExpression<Root, EnumType>: ContentExpression where EnumType: EnumExpressionCompatible, EnumType.AllCases: RandomAccessCollection {
+struct EnumExpression<Root, EnumType>: ContentExpression, StaticPredicateExpression where EnumType: EnumExpressionCompatible, EnumType.AllCases: RandomAccessCollection {
     typealias AttributeValue = EnumType
     
-    enum Operator: String, CaseIterable {
+    enum Operator: String, ExpressionOperator {
         case `is` = "is"
         case isNot = "is not"
     }

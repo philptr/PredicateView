@@ -19,10 +19,10 @@ extension AnyExpression {
     }
 }
 
-struct RawRepresentableEnumExpression<Root, EnumType>: ContentExpression where EnumType: RawRepresentableExpressionCompatible, EnumType.AllCases: RandomAccessCollection, EnumType.RawValue: StringProtocol {
+struct RawRepresentableEnumExpression<Root, EnumType>: ContentExpression, StaticPredicateExpression where EnumType: RawRepresentableExpressionCompatible, EnumType.AllCases: RandomAccessCollection, EnumType.RawValue: StringProtocol {
     typealias AttributeValue = EnumType
     
-    enum Operator: String, CaseIterable {
+    enum Operator: String, ExpressionOperator {
         case `is` = "is"
         case isNot = "is not"
     }

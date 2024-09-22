@@ -12,10 +12,12 @@ import SwiftUI
 public protocol Expression<Root>: Identifiable {
     associatedtype Root
     associatedtype ExprView: ExpressionView<Self>
-    associatedtype Operator: CaseIterable, Hashable, RawRepresentable where Operator.RawValue == String, Operator.AllCases: RandomAccessCollection, Operator.AllCases.Index == Int
+    associatedtype Operator: ExpressionOperator
     
     var id: UUID { get set }
     var currentValue: AnyHashable { get }
     
     func buildPredicate(using input: PredicateExpressions.Variable<Root>) -> (any StandardPredicateExpression<Bool>)?
 }
+
+public protocol ExpressionOperator: CaseIterable, Hashable, RawRepresentable where RawValue == String, AllCases: RandomAccessCollection, AllCases.Index == Int { }

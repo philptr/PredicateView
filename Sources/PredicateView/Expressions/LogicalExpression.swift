@@ -10,7 +10,7 @@ import SwiftUI
 public struct LogicalExpression<Root>: CompoundExpression {
     public typealias ExprView = LogicalExpressionView<Root>
     
-    public enum Operator: String, CaseIterable {
+    public enum Operator: String, ExpressionOperator {
         case conjunction = "all"
         case disjunction = "any"
     }

@@ -16,7 +16,7 @@ extension AnyExpression {
     }
 }
 
-public struct CollectionExpression<Root, C>: SimpleExpression where C: CollectionExpressionCompatible {
+public struct CollectionExpression<Root, C>: SimpleExpression, StaticPredicateExpression where C: CollectionExpressionCompatible {
     struct CurrentValue: Hashable {
         var op: Operator
         var metadata: AnyHashable
@@ -27,7 +27,7 @@ public struct CollectionExpression<Root, C>: SimpleExpression where C: Collectio
     public typealias ExprView = CollectionExpressionView<Root, C>
     public typealias Attribute = MetadataAttribute<Self, LogicalExpression<C.Element>>
     
-    public enum Operator: String, CaseIterable {
+    public enum Operator: String, ExpressionOperator {
         case contains = "contains"
         case doesNotContain = "does not contain"
         case allSatisfy = "all elements satisfy"

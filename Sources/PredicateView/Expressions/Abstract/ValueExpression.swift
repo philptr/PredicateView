@@ -24,16 +24,15 @@ public protocol ValueExpression<Root>: TitledExpression {
 
 // MARK: - SimpleExpression
 
-public protocol SimpleExpression<Root>: ValueExpression {
+public protocol SimpleExpression<Root>: TitledExpression {
     associatedtype Attribute: ExpressionAttribute<Self>
     associatedtype AttributeValue: Hashable
     
     static var defaultAttribute: Attribute { get }
     var attribute: Attribute { get set }
     
-    static func buildPredicate<V: StandardPredicateExpression<Value>>(
-        for variable: V,
-        using attribute: Attribute
+    func buildPredicate(
+        using input: PredicateExpressions.Variable<Root>
     ) -> (any StandardPredicateExpression<Bool>)?
 }
 
@@ -41,7 +40,18 @@ extension SimpleExpression {
     public var currentValue: AnyHashable {
         attribute
     }
+}
 
+// MARK: - StaticPredicateExpression
+
+public protocol StaticPredicateExpression: SimpleExpression & ValueExpression {
+    static func buildPredicate<V: StandardPredicateExpression<Value>>(
+        for variable: V,
+        using attribute: Attribute
+    ) -> (any StandardPredicateExpression<Bool>)?
+}
+
+extension SimpleExpression where Self: StaticPredicateExpression {
     public func buildPredicate(
         using input: PredicateExpressions.Variable<Root>
     ) -> (any StandardPredicateExpression<Bool>)? {

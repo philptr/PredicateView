@@ -14,7 +14,12 @@ let package = Package(
     products: [
         .library(name: "PredicateView", targets: ["PredicateView"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/NoahKamara/CompoundPredicate", from: "0.1.0"),
+    ],
     targets: [
-        .target(name: "PredicateView"),
+        .target(name: "PredicateView", dependencies: [
+            .product(name: "CompoundPredicate", package: "CompoundPredicate"),
+        ]),
     ]
 )
