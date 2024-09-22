@@ -66,7 +66,9 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
                 .fill(Color.accentColor.opacity(isFocused ? 0.15 : 0.1))
         }
         .contentShape(shape)
+#if os(iOS) || os(visionOS)
         .contentShape(.contextMenuPreview, shape)
+#endif
         .onTapGesture {
             isFocused = true
         }
