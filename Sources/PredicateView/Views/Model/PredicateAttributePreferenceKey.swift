@@ -7,20 +7,20 @@
 
 import SwiftUI
 
-struct PredicateAttributePreferenceKey: PreferenceKey {
-    static var defaultValue: [UUID: AnyHashable]? { nil }
+public struct PredicateAttributePreferenceKey: PreferenceKey {
+    public static var defaultValue: [UUID: AnyHashable]? { nil }
     
-    static func reduce(value: inout [UUID: AnyHashable]?, nextValue: () -> [UUID: AnyHashable]?) {
+    public static func reduce(value: inout [UUID: AnyHashable]?, nextValue: () -> [UUID: AnyHashable]?) {
         if let nextValue = nextValue() {
             for (k, v) in nextValue { value?[k] = v }
         }
     }
 }
 
-struct PredicateDeletedStatusPreferenceKey: PreferenceKey {
-    static var defaultValue: Bool { false }
+public struct PredicateDeletedStatusPreferenceKey: PreferenceKey {
+    public static var defaultValue: Bool { false }
     
-    static func reduce(value: inout Bool, nextValue: () -> Bool) {
+    public static func reduce(value: inout Bool, nextValue: () -> Bool) {
         value = nextValue()
     }
 }
