@@ -7,17 +7,17 @@
 
 import Foundation
 
-public protocol ExpressionAttribute<Expr>: OperatorContainer, Hashable where Expr: SimpleExpression {
+public protocol ExpressionAttribute<Expr>: OperatorContainer, Hashable where Expr: PredicateExpressionConvertible {
     var `operator`: Expr.Operator { get set }
     var value: Expr.AttributeValue { get set }
 }
 
-public struct StandardAttribute<Expr>: ExpressionAttribute where Expr: SimpleExpression {
+public struct StandardAttribute<Expr>: ExpressionAttribute where Expr: PredicateExpressionConvertible {
     public var `operator`: Expr.Operator
     public var value: Expr.AttributeValue
 }
 
-public struct MetadataAttribute<Expr, Metadata>: ExpressionAttribute where Expr: SimpleExpression {
+public struct MetadataAttribute<Expr, Metadata>: ExpressionAttribute where Expr: PredicateExpressionConvertible {
     public var `operator`: Expr.Operator
     public var value: Expr.AttributeValue
     public var metadata: Metadata

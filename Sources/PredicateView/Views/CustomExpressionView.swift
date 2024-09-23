@@ -16,8 +16,19 @@ public protocol CustomExpressionView<Root, Value, Operator>: BindableView {
     static var defaultValue: Value { get }
     
     static func predicate(for value: Value, operator: Operator) -> Predicate<Root>
+    static func decode<PredicateExpressionType: PredicateExpression<Bool>>(
+        _ expression: PredicateExpressionType
+    ) -> AnyExpression<Root>?
 }
 
 extension CustomExpressionView where Value: DefaultExpressionValueConvertible {
     public static var defaultValue: Value { .defaultExpressionValue }
+}
+
+extension CustomExpressionView {
+    public static func decode<PredicateExpressionType: PredicateExpression<Bool>>(
+        _ expression: PredicateExpressionType
+    ) -> AnyExpression<Root>? {
+        nil
+    }
 }

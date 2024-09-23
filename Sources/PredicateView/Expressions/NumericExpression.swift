@@ -19,7 +19,7 @@ extension AnyExpression {
     }
 }
 
-struct NumericExpression<Root, Number>: ContentExpression, StaticPredicateExpression where Number: NumericExpressionCompatible {
+struct NumericExpression<Root, Number>: ContentExpression, WrappablePredicateExpression where Number: NumericExpressionCompatible {
     typealias AttributeValue = Number
     
     enum Operator: String, ExpressionOperator {
@@ -28,9 +28,32 @@ struct NumericExpression<Root, Number>: ContentExpression, StaticPredicateExpres
         case isGreaterThan = "is greater than"
         case isLessThanOrEqual = "is less than or equal"
         case isGreaterThanOrEqual = "is greater than or equal"
+        case isNotEqual = "is not equal"
+        
+        var comparisonOperator: PredicateExpressions.ComparisonOperator? {
+            switch self {
+            case .isLessThan: .lessThan
+            case .isGreaterThan: .greaterThan
+            case .isLessThanOrEqual: .lessThanOrEqual
+            case .isGreaterThanOrEqual: .greaterThanOrEqual
+            default: nil
+            }
+        }
+        
+        init?(_ comparisonOperator: PredicateExpressions.ComparisonOperator) {
+            switch comparisonOperator {
+            case .lessThan: self = .isLessThan
+            case .lessThanOrEqual: self = .isLessThanOrEqual
+            case .greaterThan: self = .isGreaterThan
+            case .greaterThanOrEqual: self = .isGreaterThanOrEqual
+            @unknown default: return nil
+            }
+        }
     }
     
-    static var defaultAttribute: StandardAttribute<Self> { .init(operator: .equals, value: 0) }
+    static var defaultAttribute: StandardAttribute<Self> {
+        .init(operator: .equals, value: 0)
+    }
     
     var id = UUID()
     let keyPath: KeyPath<Root, Number>
@@ -47,25 +70,45 @@ struct NumericExpression<Root, Number>: ContentExpression, StaticPredicateExpres
                 lhs: variable,
                 rhs: PredicateExpressions.Value(attribute.value)
             )
+        case .isNotEqual:
+            return PredicateExpressions.NotEqual(
+                lhs: variable,
+                rhs: PredicateExpressions.Value(attribute.value)
+            )
         default:
-            let comparisonOperator: PredicateExpressions.ComparisonOperator? = switch attribute.operator {
-            case .isLessThan:
-                .lessThan
-            case .isGreaterThan:
-                .greaterThan
-            case .isLessThanOrEqual:
-                .lessThanOrEqual
-            case .isGreaterThanOrEqual:
-                .greaterThanOrEqual
-            default: nil
-            }
-            
-            guard let comparisonOperator else { return nil }
+            guard let comparisonOperator = attribute.operator.comparisonOperator else { return nil }
             return PredicateExpressions.Comparison(
                 lhs: variable,
                 rhs: PredicateExpressions.Value(attribute.value),
                 op: comparisonOperator
             )
+        }
+    }
+    
+    public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
+        _ expression: PredicateExpressionType
+    ) -> (any Expression<Root>)? {
+        switch expression {
+        case let expression as PredicateExpressions.Equal<KeyPathPredicateExpression, ValuePredicateExpression>:
+            NumericExpression(
+                keyPath: expression.lhs.keyPath,
+                title: title,
+                attribute: .init(operator: .equals, value: expression.rhs.value)
+            )
+        case let expression as PredicateExpressions.NotEqual<KeyPathPredicateExpression, ValuePredicateExpression>:
+            NumericExpression(
+                keyPath: expression.lhs.keyPath,
+                title: title,
+                attribute: .init(operator: .isNotEqual, value: expression.rhs.value)
+            )
+        case let expression as PredicateExpressions.Comparison<KeyPathPredicateExpression, ValuePredicateExpression>:
+            NumericExpression(
+                keyPath: expression.lhs.keyPath,
+                title: title,
+                attribute: .init(operator: .init(expression.op) ?? .equals, value: expression.rhs.value)
+            )
+        default:
+            nil
         }
     }
     

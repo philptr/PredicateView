@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LogicalExpression<Root>: CompoundExpression {
+public struct LogicalExpression<Root>: CompoundExpression, PredicateExpressionDecoding {
     public typealias ExprView = LogicalExpressionView<Root>
     
     public enum Operator: String, ExpressionOperator {
@@ -23,6 +23,25 @@ public struct LogicalExpression<Root>: CompoundExpression {
         let predicates = children.compactMap { $0.buildPredicate(using: input) }
         guard !predicates.isEmpty else { return nil }
         return reducedExpression(for: predicates)
+    }
+    
+    public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
+        _ expression: PredicateExpressionType,
+        using decoders: [any PredicateExpressionDecoding<Root>]
+    ) -> (any Expression<Root>)? {
+        switch expression {
+        case let expression as any AnyLogicalPredicateExpression:
+            let subexpressions = expression.subexpressions
+            var results: [any Expression<Root>] = []
+            for subexpression in subexpressions {
+                results += decoders.compactMap { $0.decode(subexpression, using: decoders) }
+            }
+
+            let op = expression.operator(for: self)
+            return LogicalExpression(children: results, attribute: .init(operator: op)).flattened()
+        default:
+            return nil
+        }
     }
     
     private func reducedExpression(for expressions: [(any StandardPredicateExpression<Bool>)]) -> any StandardPredicateExpression<Bool> {
@@ -49,6 +68,22 @@ public struct LogicalExpression<Root>: CompoundExpression {
             PredicateExpressions.Conjunction(lhs: firstExpression, rhs: secondExpression)
         case .disjunction:
             PredicateExpressions.Disjunction(lhs: firstExpression, rhs: secondExpression)
+        }
+    }
+    
+    private func flattened() -> Self {
+        var copy = self
+        copy.children = flattenChildren(children)
+        return copy
+    }
+    
+    private func flattenChildren(_ children: [any Expression<Root>]) -> [any Expression<Root>] {
+        children.flatMap { child -> [any Expression<Root>] in
+            if let child = child as? Self, child.attribute == attribute {
+                flattenChildren(child.children)
+            } else {
+                [child]
+            }
         }
     }
 }
@@ -152,4 +187,28 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
             }
         }
     }
+}
+
+protocol AnyLogicalPredicateExpression: PredicateExpression<Bool> {
+    var erasedLHS: any PredicateExpression<Bool> { get }
+    var erasedRHS: any PredicateExpression<Bool> { get }
+    func `operator`<Root>(for expression: LogicalExpression<Root>) -> LogicalExpression<Root>.Operator
+}
+
+extension AnyLogicalPredicateExpression {
+    var subexpressions: [any PredicateExpression<Bool>] {
+        [erasedLHS, erasedRHS]
+    }
+}
+
+extension PredicateExpressions.Conjunction: AnyLogicalPredicateExpression {
+    var erasedLHS: any PredicateExpression<Bool> { lhs }
+    var erasedRHS: any PredicateExpression<Bool> { rhs }
+    func `operator`<Root>(for expression: LogicalExpression<Root>) -> LogicalExpression<Root>.Operator { .conjunction }
+}
+
+extension PredicateExpressions.Disjunction: AnyLogicalPredicateExpression {
+    var erasedLHS: any PredicateExpression<Bool> { lhs }
+    var erasedRHS: any PredicateExpression<Bool> { rhs }
+    func `operator`<Root>(for expression: LogicalExpression<Root>) -> LogicalExpression<Root>.Operator { .disjunction }
 }

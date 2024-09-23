@@ -17,7 +17,7 @@ extension AnyExpression {
     }
 }
 
-struct BoolExpression<Root>: ContentExpression, StaticPredicateExpression {
+struct BoolExpression<Root>: ContentExpression, WrappablePredicateExpression {
     typealias AttributeValue = Bool
     
     enum Operator: String, ExpressionOperator {
@@ -61,6 +61,27 @@ struct BoolExpression<Root>: ContentExpression, StaticPredicateExpression {
                 lhs: variable,
                 rhs: PredicateExpressions.Value(attribute.value)
             )
+        }
+    }
+    
+    func decode<PredicateExpressionType: PredicateExpression<Bool>>(
+        _ expression: PredicateExpressionType
+    ) -> (any Expression<Root>)? {
+        switch expression {
+        case let expression as PredicateExpressions.Equal<KeyPathPredicateExpression, ValuePredicateExpression>:
+            BoolExpression(
+                keyPath: expression.lhs.keyPath,
+                title: title,
+                attribute: .init(operator: .is, value: expression.rhs.value)
+            )
+        case let expression as PredicateExpressions.NotEqual<KeyPathPredicateExpression, ValuePredicateExpression>:
+            BoolExpression(
+                keyPath: expression.lhs.keyPath,
+                title: title,
+                attribute: .init(operator: .isNot, value: expression.rhs.value)
+            )
+        default:
+            nil
         }
     }
     

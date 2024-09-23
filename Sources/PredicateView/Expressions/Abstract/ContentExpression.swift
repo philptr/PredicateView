@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - ContentExpression
 
-public protocol ContentExpression<Root>: SimpleExpression {
+public protocol ContentExpression<Root>: PredicateExpressionConvertible & TitledExpression {
     associatedtype ExprView = ContentExpressionView<Root, Self>
     associatedtype Result: View
     

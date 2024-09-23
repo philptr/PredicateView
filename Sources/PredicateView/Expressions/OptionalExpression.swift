@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct OptionalExpression<Root, WrappedExpression>: ExpressionWrapper where WrappedExpression: ContentExpression<Root> & StaticPredicateExpression {
+struct OptionalExpression<Root, WrappedExpression>: ExpressionWrapper where WrappedExpression: ContentExpression<Root> & WrappablePredicateExpression {
     typealias ExprView = OptionalExpressionView<Root, WrappedExpression>
     
     enum Operator: String, ExpressionOperator {
@@ -58,9 +58,16 @@ struct OptionalExpression<Root, WrappedExpression>: ExpressionWrapper where Wrap
             )
         }
     }
+    
+    public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
+        _ expression: PredicateExpressionType
+    ) -> (any Expression<Root>)? {
+        // TODO: Needs implementation.
+        nil
+    }
 }
 
-struct OptionalExpressionView<Root, WrappedExpression>: ExpressionView where WrappedExpression: ContentExpression<Root> & StaticPredicateExpression {
+struct OptionalExpressionView<Root, WrappedExpression>: ExpressionView where WrappedExpression: ContentExpression<Root> & WrappablePredicateExpression {
     typealias Expression = OptionalExpression<Root, WrappedExpression>
     
     var expression: Binding<Expression>

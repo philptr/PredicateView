@@ -37,4 +37,10 @@ struct CustomExpression<Root, Content>: ContentExpression where Content: CustomE
     static func makeContentView(_ value: Binding<AttributeValue>) -> some View {
         Content(value: value)
     }
+    
+    public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
+        _ expression: PredicateExpressionType
+    ) -> (any Expression<Root>)? {
+        Content.decode(expression)?.wrappedValue
+    }
 }

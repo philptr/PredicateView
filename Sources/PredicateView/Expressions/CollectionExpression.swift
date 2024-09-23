@@ -16,7 +16,7 @@ extension AnyExpression {
     }
 }
 
-public struct CollectionExpression<Root, C>: SimpleExpression, StaticPredicateExpression where C: CollectionExpressionCompatible {
+public struct CollectionExpression<Root, C>: PredicateExpressionConvertible, WrappablePredicateExpression where C: CollectionExpressionCompatible {
     struct CurrentValue: Hashable {
         var op: Operator
         var metadata: AnyHashable
@@ -78,6 +78,7 @@ public struct CollectionExpression<Root, C>: SimpleExpression, StaticPredicateEx
             case .allSatisfy: .allSatisfy
             }
             
+            // TODO: This approach will not work with SwiftData. Need to express in terms of standard predicates.
             return PredicateExpressions.SequencePredicate(sequence: sequenceVariable, test: elementTest, variable: elementVariable, operation: expressionOperation)
         }
         
@@ -85,6 +86,13 @@ public struct CollectionExpression<Root, C>: SimpleExpression, StaticPredicateEx
         guard let elementTest = childExpression.buildPredicate(using: elementVariable) else { return nil }
         
         return makeExpression(using: elementTest)
+    }
+    
+    public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
+        _ expression: PredicateExpressionType
+    ) -> (any Expression<Root>)? {
+        // TODO: Needs implementation.
+        nil
     }
 }
 

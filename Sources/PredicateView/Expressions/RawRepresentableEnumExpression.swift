@@ -19,7 +19,7 @@ extension AnyExpression {
     }
 }
 
-struct RawRepresentableEnumExpression<Root, EnumType>: ContentExpression, StaticPredicateExpression where EnumType: RawRepresentableExpressionCompatible, EnumType.AllCases: RandomAccessCollection, EnumType.RawValue: StringProtocol {
+struct RawRepresentableEnumExpression<Root, EnumType>: ContentExpression, WrappablePredicateExpression where EnumType: RawRepresentableExpressionCompatible, EnumType.AllCases: RandomAccessCollection, EnumType.RawValue: StringProtocol {
     typealias AttributeValue = EnumType
     
     enum Operator: String, ExpressionOperator {
@@ -50,6 +50,13 @@ struct RawRepresentableEnumExpression<Root, EnumType>: ContentExpression, Static
                 rhs: PredicateExpressions.Value(attribute.value)
             )
         }
+    }
+    
+    public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
+        _ expression: PredicateExpressionType
+    ) -> (any Expression<Root>)? {
+        // TODO: Needs implementation.
+        nil
     }
 
     static func makeContentView(_ value: Binding<EnumType>) -> some View {

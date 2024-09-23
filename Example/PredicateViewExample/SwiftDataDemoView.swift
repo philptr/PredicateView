@@ -41,7 +41,11 @@ struct SwiftDataDemoView: View {
     }
     
     @Environment(\.modelContext) private var modelContext
-    @State var predicate: Predicate<Item> = .true
+    @State var predicate: Predicate<Item> = #Predicate<Item> {
+        $0.title.localizedStandardContains("Item")
+    }
+    
+    @State private var savedPredicates: [Predicate<Item>] = []
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -50,6 +54,21 @@ struct SwiftDataDemoView: View {
                     .init(keyPath: \.title, title: "Title"),
                     .init(StatusExpressionView.self),
                 ])
+            }
+            
+            GroupBox("Cloned Predicates") {
+                ForEach(Array($savedPredicates.enumerated()), id: \.offset) { index, $predicate in
+                    ScrollView(.horizontal) {
+                        PredicateView(predicate: $predicate, rowTemplates: [
+                            .init(keyPath: \.title, title: "Title"),
+                            .init(StatusExpressionView.self),
+                        ])
+                    }
+                }
+                
+                Button("Clone") {
+                    savedPredicates.append(predicate)
+                }
             }
             
             Table(items) {
