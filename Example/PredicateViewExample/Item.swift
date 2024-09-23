@@ -21,7 +21,7 @@ final class Item {
     
     init() {
         self.id = UUID()
-        self.timestamp = Date(timeIntervalSinceNow: .random(in: -3600 * 24...3600 * 24))
+        self.timestamp = Date(timeIntervalSinceNow: .random(in: -3600 * 24 * 30...3600 * 24 * 30))
         self.title = "Item \(Int.random(in: 1...1000))"
         self._status = Status.allCases.randomElement()!.rawValue
     }

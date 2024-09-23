@@ -49,32 +49,28 @@ struct SwiftDataDemoView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            ScrollView(.horizontal) {
-                PredicateView(predicate: $predicate, rowTemplates: [
-                    .init(keyPath: \.title, title: "Title"),
-                    .init(StatusExpressionView.self),
-                ])
-            }
+            predicateView(for: $predicate)
             
-            GroupBox("Cloned Predicates") {
-                ForEach(Array($savedPredicates.enumerated()), id: \.offset) { index, $predicate in
-                    ScrollView(.horizontal) {
-                        PredicateView(predicate: $predicate, rowTemplates: [
-                            .init(keyPath: \.title, title: "Title"),
-                            .init(StatusExpressionView.self),
-                        ])
+            DisclosureGroup("Cloning") {
+                VStack(alignment: .leading) {
+                    Button("New Clone") {
+                        savedPredicates.append(predicate)
+                    }
+                    
+                    ForEach(Array($savedPredicates.enumerated()), id: \.offset) { index, $predicate in
+                        predicateView(for: $predicate)
                     }
                 }
-                
-                Button("Clone") {
-                    savedPredicates.append(predicate)
-                }
+                .padding(.vertical)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             
             Table(items) {
                 TableColumn("Title", value: \.title)
                 TableColumn("Status", value: \.status.rawValue)
-                TableColumn("Timestamp", value: \.timestamp.description)
+                TableColumn("Timestamp") { value in
+                    Text(value.timestamp, style: .date)
+                }
             }
         }
         .padding()
@@ -86,6 +82,16 @@ struct SwiftDataDemoView: View {
             Button("Populate", systemImage: "plus") {
                 populate(itemCount: 10)
             }
+        }
+    }
+    
+    private func predicateView(for predicate: Binding<Predicate<Item>>) -> some View {
+        ScrollView(.horizontal) {
+            PredicateView(predicate: predicate, rowTemplates: [
+                .init(keyPath: \.title, title: "Title"),
+                .init(keyPath: \.timestamp, title: "Timestamp"),
+                .init(StatusExpressionView.self),
+            ])
         }
     }
     

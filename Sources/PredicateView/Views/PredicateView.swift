@@ -10,19 +10,22 @@ import SwiftUI
 public struct PredicateView<Root>: View {
     @Binding public var predicate: Predicate<Root>
     
-    @State private var rootExpression: LogicalExpression<Root>
+    @State private var rootExpression: LogicalExpression<Root> = .init()
     @Bindable private var configuration: PredicateViewConfiguration<Root>
     
     public init(predicate: Binding<Predicate<Root>>, rowTemplates: [AnyExpression<Root>]) {
         self._predicate = predicate
         let templates = rowTemplates.map(\.wrappedValue)
         self.configuration = PredicateViewConfiguration(rowTemplates: templates)
-        
+    }
+    
+    private func updateExpression() {
+        let templates = configuration.rowTemplates
         let expressions = (templates + [LogicalExpression<Root>()])
-            .decode(from: predicate.wrappedValue.expression, as: Root.self)
+            .decode(from: predicate.expression, as: Root.self)
         
-        self.rootExpression = if expressions.count == 1,
-                                 let expression = expressions.first as? LogicalExpression<Root> {
+        rootExpression = if expressions.count == 1,
+           let expression = expressions.first as? LogicalExpression<Root> {
             expression
         } else {
             .init(children: expressions)
@@ -34,6 +37,9 @@ public struct PredicateView<Root>: View {
             .environment(configuration)
             .onPreferenceChange(PredicateAttributePreferenceKey.self) { _ in
                 Task { buildPredicate() }
+            }
+            .onAppear {
+                updateExpression()
             }
     }
 
