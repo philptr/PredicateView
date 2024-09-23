@@ -26,3 +26,15 @@ extension PredicateExpressionConvertible {
         attribute
     }
 }
+
+extension PredicateExpressionConvertible where Self: KeyPathExpression {
+    func decoded(
+        keyPath keyPathExpression: KeyPathPredicateExpression,
+        attribute: @autoclosure () -> Attribute
+    ) -> Self? {
+        guard keyPathExpression.keyPath == keyPath else { return nil }
+        var copy = self
+        copy.attribute = attribute()
+        return copy
+    }
+}

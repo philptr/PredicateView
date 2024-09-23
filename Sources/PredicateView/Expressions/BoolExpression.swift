@@ -69,15 +69,13 @@ struct BoolExpression<Root>: ContentExpression, WrappablePredicateExpression {
     ) -> (any Expression<Root>)? {
         switch expression {
         case let expression as PredicateExpressions.Equal<KeyPathPredicateExpression, ValuePredicateExpression>:
-            BoolExpression(
-                keyPath: expression.lhs.keyPath,
-                title: title,
+            decoded(
+                keyPath: expression.lhs,
                 attribute: .init(operator: .is, value: expression.rhs.value)
             )
         case let expression as PredicateExpressions.NotEqual<KeyPathPredicateExpression, ValuePredicateExpression>:
-            BoolExpression(
-                keyPath: expression.lhs.keyPath,
-                title: title,
+            decoded(
+                keyPath: expression.lhs,
                 attribute: .init(operator: .isNot, value: expression.rhs.value)
             )
         default:

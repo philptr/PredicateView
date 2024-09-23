@@ -90,21 +90,18 @@ struct NumericExpression<Root, Number>: ContentExpression, WrappablePredicateExp
     ) -> (any Expression<Root>)? {
         switch expression {
         case let expression as PredicateExpressions.Equal<KeyPathPredicateExpression, ValuePredicateExpression>:
-            NumericExpression(
-                keyPath: expression.lhs.keyPath,
-                title: title,
+            decoded(
+                keyPath: expression.lhs,
                 attribute: .init(operator: .equals, value: expression.rhs.value)
             )
         case let expression as PredicateExpressions.NotEqual<KeyPathPredicateExpression, ValuePredicateExpression>:
-            NumericExpression(
-                keyPath: expression.lhs.keyPath,
-                title: title,
+            decoded(
+                keyPath: expression.lhs,
                 attribute: .init(operator: .isNotEqual, value: expression.rhs.value)
             )
         case let expression as PredicateExpressions.Comparison<KeyPathPredicateExpression, ValuePredicateExpression>:
-            NumericExpression(
-                keyPath: expression.lhs.keyPath,
-                title: title,
+            decoded(
+                keyPath: expression.lhs,
                 attribute: .init(operator: .init(expression.op) ?? .equals, value: expression.rhs.value)
             )
         default:

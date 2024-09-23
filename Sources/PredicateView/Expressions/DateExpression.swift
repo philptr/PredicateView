@@ -104,9 +104,8 @@ struct DateExpression<Root>: ContentExpression, WrappablePredicateExpression {
     ) -> (any Expression<Root>)? {
         switch expression {
         case let expression as PredicateExpressions.Comparison<KeyPathPredicateExpression, ValuePredicateExpression>:
-            DateExpression(
-                keyPath: expression.lhs.keyPath,
-                title: title,
+            decoded(
+                keyPath: expression.lhs,
                 attribute: .init(operator: .init(expression.op) ?? .before, value: expression.rhs.value)
             )
         case let expression as PredicateExpressions.Conjunction<Comparison, Comparison>:

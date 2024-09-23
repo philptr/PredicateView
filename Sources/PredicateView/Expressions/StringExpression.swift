@@ -62,21 +62,18 @@ struct StringExpression<Root>: ContentExpression, WrappablePredicateExpression {
     ) -> (any Expression<Root>)? {
         switch expression {
         case let expression as PredicateExpressions.Equal<KeyPathPredicateExpression, ValuePredicateExpression>:
-            StringExpression(
-                keyPath: expression.lhs.keyPath,
-                title: title,
+            decoded(
+                keyPath: expression.lhs,
                 attribute: .init(operator: .equals, value: expression.rhs.value)
             )
         case let expression as PredicateExpressions.StringLocalizedStandardContains<KeyPathPredicateExpression, ValuePredicateExpression>:
-            StringExpression(
-                keyPath: expression.root.keyPath,
-                title: title,
+            decoded(
+                keyPath: expression.root,
                 attribute: .init(operator: .contains, value: expression.other.value)
             )
         case let expression as PredicateExpressions.SequenceStartsWith<KeyPathPredicateExpression, ValuePredicateExpression>:
-            StringExpression(
-                keyPath: expression.base.keyPath,
-                title: title,
+            decoded(
+                keyPath: expression.base,
                 attribute: .init(operator: .equals, value: expression.prefix.value)
             )
         default:
