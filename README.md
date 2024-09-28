@@ -83,6 +83,8 @@ PredicateView(predicate: $predicate, rowTemplates: [
 - [x] Type safety
 - [x] Built-in support for optionals and nested expressions
 - [x] Rich representations for supported data types
+- [x] SwiftData support
+- [x] Support for custom controls for row templates
 
 ## Not Features
 
@@ -92,6 +94,30 @@ As an experimental control, `PredicateView` does not support the following capab
 - [ ] A rich text experience using text attachments
 - [ ] Support for all built-in `PredicateExpression`s
 
+## Advanced Capabilities
+
+### Custom Predicate Views
+
+The `CustomExpressionView` protocol allows you to build custom expression views for key paths not covered by the standard set of built-in expressions. For example, when working with CloudKit in SwiftData, you may choose to implement a custom picker for your enums and dynamically convert them to raw values for their representation in the model layer.
+
+A custom predicate expression may be used as a row template just like any of the standard ones:
+
+```swift
+PredicateView(predicate: predicate, rowTemplates: [
+    .init(keyPath: \.title, title: "Title"),
+    .init(keyPath: \.creationDate, title: "Creation date"),
+    .init(keyPath: \.modificationDate, title: "Modification date"),
+    // Custom expression view:
+    .init(StatusExpressionView.self),
+])
+```
+
+See the sample project for additional details.
+
+### Decoding Predicates
+
+`PredicateView` supports taking `Predicate`s as input and populating the control from them. This makes it convenient to store user-built predicates in a database and subsequently allowing your users to modify them. Most built-in expression view types support decoding. Custom expressions may choose to opt into the decoding capability by implementing a single method. The decoding support is opt-in and *not* all-or-nothing. You may elect some expression views to not allow decoding, in which case they will not be populated when the control is instantiated using a non-trivial `Predicate` instance. Conformance is independent, so this decision does not affect other custom expression views or any of the built-in ones.
+
 ## Compatibility
 
-Compatibility matches that of the [Swift predicates](https://forums.swift.org/t/pitch-swift-predicates/62000) feature; namely macOS 14.0+, iOS 17.0+, watchOS 10.0+.
+Compatibility matches that of the [Swift predicates](https://forums.swift.org/t/pitch-swift-predicates/62000) feature; namely macOS 14.0+, iOS 17.0+, watchOS 10.0+, visionOS 1.0+.
