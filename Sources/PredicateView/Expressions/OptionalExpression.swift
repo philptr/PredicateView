@@ -61,7 +61,7 @@ struct OptionalExpression<Root, WrappedExpression>: ExpressionWrapper where Wrap
     
     public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
         _ expression: PredicateExpressionType
-    ) -> (any Expression<Root>)? {
+    ) -> (any ExpressionProtocol<Root>)? {
         // TODO: Needs implementation.
         nil
     }

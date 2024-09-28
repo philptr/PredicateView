@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A preference key for tracking changes to predicate attributes.
 public struct PredicateAttributePreferenceKey: PreferenceKey {
     public static var defaultValue: [UUID: AnyHashable]? { nil }
     
@@ -17,6 +18,7 @@ public struct PredicateAttributePreferenceKey: PreferenceKey {
     }
 }
 
+/// A preference key for tracking the deleted status of predicate components.
 public struct PredicateDeletedStatusPreferenceKey: PreferenceKey {
     public static var defaultValue: Bool { false }
     

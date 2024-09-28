@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A7236902CA8A677003DD1EC /* CustomExpressionDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A72368F2CA8A677003DD1EC /* CustomExpressionDemoView.swift */; };
+		4A7236922CA8A877003DD1EC /* PredicateDecodingDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7236912CA8A877003DD1EC /* PredicateDecodingDemoView.swift */; };
+		4A7236942CA8A9B3003DD1EC /* ReadOnlyDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7236932CA8A9B3003DD1EC /* ReadOnlyDemoView.swift */; };
 		4ACACCED2C9F5C65003FA734 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACACCE82C9F5C65003FA734 /* ContentView.swift */; };
 		4ACACCEE2C9F5C65003FA734 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACACCE92C9F5C65003FA734 /* Item.swift */; };
 		4ACACCEF2C9F5C65003FA734 /* PredicateViewExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACACCEB2C9F5C65003FA734 /* PredicateViewExampleApp.swift */; };
@@ -19,6 +22,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4A72368F2CA8A677003DD1EC /* CustomExpressionDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomExpressionDemoView.swift; sourceTree = "<group>"; };
+		4A7236912CA8A877003DD1EC /* PredicateDecodingDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredicateDecodingDemoView.swift; sourceTree = "<group>"; };
+		4A7236932CA8A9B3003DD1EC /* ReadOnlyDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadOnlyDemoView.swift; sourceTree = "<group>"; };
 		4ACACCD12C9F5C56003FA734 /* PredicateViewExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PredicateViewExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ACACCE52C9F5C65003FA734 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		4ACACCE72C9F5C65003FA734 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -74,6 +80,9 @@
 				4ACACCE82C9F5C65003FA734 /* ContentView.swift */,
 				4ACACCFC2C9F5D6C003FA734 /* PredicateDemoView.swift */,
 				4ACACCFF2C9F620E003FA734 /* SwiftDataDemoView.swift */,
+				4A72368F2CA8A677003DD1EC /* CustomExpressionDemoView.swift */,
+				4A7236912CA8A877003DD1EC /* PredicateDecodingDemoView.swift */,
+				4A7236932CA8A9B3003DD1EC /* ReadOnlyDemoView.swift */,
 				4ACACCE92C9F5C65003FA734 /* Item.swift */,
 				4ACACCEA2C9F5C65003FA734 /* PredicateViewExample.entitlements */,
 				4ACACCE72C9F5C65003FA734 /* Assets.xcassets */,
@@ -162,9 +171,12 @@
 			files = (
 				4ACACCED2C9F5C65003FA734 /* ContentView.swift in Sources */,
 				4ACACCEE2C9F5C65003FA734 /* Item.swift in Sources */,
+				4A7236902CA8A677003DD1EC /* CustomExpressionDemoView.swift in Sources */,
 				4ACACD002C9F620E003FA734 /* SwiftDataDemoView.swift in Sources */,
 				4ACACCEF2C9F5C65003FA734 /* PredicateViewExampleApp.swift in Sources */,
 				4ACACCFD2C9F5D6C003FA734 /* PredicateDemoView.swift in Sources */,
+				4A7236922CA8A877003DD1EC /* PredicateDecodingDemoView.swift in Sources */,
+				4A7236942CA8A9B3003DD1EC /* ReadOnlyDemoView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

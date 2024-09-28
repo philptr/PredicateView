@@ -66,16 +66,16 @@ struct BoolExpression<Root>: ContentExpression, WrappablePredicateExpression {
     
     func decode<PredicateExpressionType: PredicateExpression<Bool>>(
         _ expression: PredicateExpressionType
-    ) -> (any Expression<Root>)? {
+    ) -> (any ExpressionProtocol<Root>)? {
         switch expression {
         case let expression as PredicateExpressions.Equal<KeyPathPredicateExpression, ValuePredicateExpression>:
-            decoded(
-                keyPath: expression.lhs,
+            populateFromDecodedExpression(
+                ifKeyPathMatches: expression.lhs,
                 attribute: .init(operator: .is, value: expression.rhs.value)
             )
         case let expression as PredicateExpressions.NotEqual<KeyPathPredicateExpression, ValuePredicateExpression>:
-            decoded(
-                keyPath: expression.lhs,
+            populateFromDecodedExpression(
+                ifKeyPathMatches: expression.lhs,
                 attribute: .init(operator: .isNot, value: expression.rhs.value)
             )
         default:

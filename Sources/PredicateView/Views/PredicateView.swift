@@ -7,12 +7,24 @@
 
 import SwiftUI
 
+/// A SwiftUI view that provides a user interface for building and editing predicates.
 public struct PredicateView<Root>: View {
+    /// The binding to the predicate being edited.
     @Binding public var predicate: Predicate<Root>
     
+    /// The root logical expression that represents the current state of the predicate.
     @State private var rootExpression: LogicalExpression<Root> = .init()
+    
+    /// The configuration for the predicate view, including available row templates.
     @Bindable private var configuration: PredicateViewConfiguration<Root>
     
+    /// Creates a new ``PredicateView`` suitable for displaying and optionally editing a provided predicate in the UI of your application.
+    ///
+    /// - Parameters:
+    ///   - predicate: A binding to the predicate being displayed or edited.
+    ///   - rowTemplates: An array of expression templates available for building the predicate.
+    ///
+    /// - Note: To make a ``PredicateView`` read-only, use the `disabled` modifier.
     public init(predicate: Binding<Predicate<Root>>, rowTemplates: [AnyExpression<Root>]) {
         self._predicate = predicate
         let templates = rowTemplates.map(\.wrappedValue)
@@ -50,8 +62,8 @@ public struct PredicateView<Root>: View {
     }
 }
 
-private extension Sequence where Element == (any Expression) {
-    func decode<Root>(from expression: any PredicateExpression<Bool>, as root: Root.Type = Root.self) -> [any Expression<Root>] {
+private extension Sequence where Element == (any ExpressionProtocol) {
+    func decode<Root>(from expression: any PredicateExpression<Bool>, as root: Root.Type = Root.self) -> [any ExpressionProtocol<Root>] {
         let decoders = compactMap { $0 as? any PredicateExpressionDecoding<Root> }
         return decoders.compactMap { $0.decode(expression, using: decoders) }
     }

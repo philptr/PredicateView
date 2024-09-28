@@ -90,7 +90,7 @@ public struct CollectionExpression<Root, C>: PredicateExpressionConvertible, Wra
     
     public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
         _ expression: PredicateExpressionType
-    ) -> (any Expression<Root>)? {
+    ) -> (any ExpressionProtocol<Root>)? {
         // TODO: Needs implementation.
         nil
     }

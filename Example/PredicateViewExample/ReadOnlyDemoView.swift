@@ -1,21 +1,24 @@
 //
-//  SwiftDataDemoView.swift
+//  ReadOnlyDemoView.swift
 //  PredicateViewExample
 //
-//  Created by Phil Zakharchenko on 9/21/24.
+//  Created by Phil Zakharchenko on 9/28/24.
 //
 
 import SwiftData
 import SwiftUI
 import PredicateView
 
-struct SwiftDataDemoView: View {
+struct ReadOnlyDemoView: View {
     @Environment(\.modelContext) private var modelContext
-    @State var predicate: Predicate<Item> = .true
-
+    @State var predicate: Predicate<Item> = #Predicate<Item> {
+        $0.title.localizedStandardContains("Item") && $0._status != "done"
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             predicateView(for: $predicate)
+                .disabled(true)
             
             Table(items) {
                 TableColumn("Title", value: \.title)
@@ -29,15 +32,10 @@ struct SwiftDataDemoView: View {
             }
         }
         .padding()
-        .toolbar {
-            Button("Clear", systemImage: "trash") {
-                clear()
-            }
-            
-            Button("Populate", systemImage: "plus") {
-                populate(itemCount: 10)
-            }
-        }
+    }
+    
+    private var items: [Item] {
+        try! modelContext.fetch(.init(predicate: predicate))
     }
     
     private func predicateView(for predicate: Binding<Predicate<Item>>) -> some View {
@@ -46,27 +44,8 @@ struct SwiftDataDemoView: View {
                 .init(keyPath: \.title, title: "Title"),
                 .init(keyPath: \.creationDate, title: "Creation date"),
                 .init(keyPath: \.modificationDate, title: "Modification date"),
+                .init(StatusExpressionView.self),
             ])
-        }
-    }
-    
-    private var items: [Item] {
-        try! modelContext.fetch(.init(predicate: predicate))
-    }
-    
-    private func populate(itemCount: Int) {
-        withAnimation {
-            for _ in 0..<itemCount {
-                modelContext.insert(Item())
-            }
-            try? modelContext.save()
-        }
-    }
-    
-    private func clear() {
-        withAnimation {
-            try? modelContext.delete(model: Item.self)
-            try? modelContext.save()
         }
     }
 }

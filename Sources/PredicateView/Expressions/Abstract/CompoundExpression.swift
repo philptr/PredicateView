@@ -9,10 +9,10 @@ import Foundation
 
 // MARK: - CompoundExpression
 
-public protocol CompoundExpression<Root>: Expression {
+public protocol CompoundExpression<Root>: ExpressionProtocol {
     associatedtype Root
     
-    var children: [any Expression<Root>] { get set }
+    var children: [any ExpressionProtocol<Root>] { get set }
     var attribute: CompoundAttribute<Self> { get set }
 }
 

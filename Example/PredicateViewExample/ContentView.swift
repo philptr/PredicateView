@@ -13,15 +13,33 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             List {
-                NavigationLink("Simple") {
+                NavigationLink("Simple Data Model") {
                     PredicateDemoView()
-                        .navigationTitle("PredicateView")
+                        .navigationTitle("Simple Data Model")
                         .toolbarTitleDisplayMode(.inline)
                 }
                 
                 NavigationLink("SwiftData") {
                     SwiftDataDemoView()
                         .navigationTitle("SwiftData")
+                        .toolbarTitleDisplayMode(.inline)
+                }
+                
+                NavigationLink("Custom Expressions") {
+                    CustomExpressionDemoView()
+                        .navigationTitle("Custom Expressions")
+                        .toolbarTitleDisplayMode(.inline)
+                }
+                
+                NavigationLink("Predicate Decoding") {
+                    PredicateDecodingDemoView()
+                        .navigationTitle("Predicate Decoding")
+                        .toolbarTitleDisplayMode(.inline)
+                }
+                
+                NavigationLink("Read Only") {
+                    ReadOnlyDemoView()
+                        .navigationTitle("Read Only")
                         .toolbarTitleDisplayMode(.inline)
                 }
             }
@@ -32,24 +50,4 @@ struct ContentView: View {
             Text("Select an item")
         }
     }
-
-//    private func addItem() {
-//        withAnimation {
-//            let newItem = Item(timestamp: Date())
-//            modelContext.insert(newItem)
-//        }
-//    }
-//
-//    private func deleteItems(offsets: IndexSet) {
-//        withAnimation {
-//            for index in offsets {
-//                modelContext.delete(items[index])
-//            }
-//        }
-//    }
-}
-
-#Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }

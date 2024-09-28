@@ -16,7 +16,7 @@ public struct LogicalExpression<Root>: CompoundExpression, PredicateExpressionDe
     }
     
     public var id = UUID()
-    public var children: [any Expression<Root>] = []
+    public var children: [any ExpressionProtocol<Root>] = []
     public var attribute: CompoundAttribute<Self> = .init(operator: .conjunction)
     
     public func buildPredicate(using input: PredicateExpressions.Variable<Root>) -> (any StandardPredicateExpression<Bool>)? {
@@ -28,11 +28,11 @@ public struct LogicalExpression<Root>: CompoundExpression, PredicateExpressionDe
     public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
         _ expression: PredicateExpressionType,
         using decoders: [any PredicateExpressionDecoding<Root>]
-    ) -> (any Expression<Root>)? {
+    ) -> (any ExpressionProtocol<Root>)? {
         switch expression {
         case let expression as any AnyLogicalPredicateExpression:
             let subexpressions = expression.subexpressions
-            var results: [any Expression<Root>] = []
+            var results: [any ExpressionProtocol<Root>] = []
             for subexpression in subexpressions {
                 results += decoders.compactMap { $0.decode(subexpression, using: decoders) }
             }
@@ -77,8 +77,8 @@ public struct LogicalExpression<Root>: CompoundExpression, PredicateExpressionDe
         return copy
     }
     
-    private func flattenChildren(_ children: [any Expression<Root>]) -> [any Expression<Root>] {
-        children.flatMap { child -> [any Expression<Root>] in
+    private func flattenChildren(_ children: [any ExpressionProtocol<Root>]) -> [any ExpressionProtocol<Root>] {
+        children.flatMap { child -> [any ExpressionProtocol<Root>] in
             if let child = child as? Self, child.attribute == attribute {
                 flattenChildren(child.children)
             } else {

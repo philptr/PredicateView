@@ -13,6 +13,8 @@ public protocol KeyPathExpression<Root>: TitledExpression {
     associatedtype Root
     associatedtype Value: Hashable
     
+    /// The key path of the value in the source type.
+    /// This is used by the underlying matching and predicate decoding logic.
     var keyPath: KeyPath<Root, Value> { get }
 }
 

@@ -8,6 +8,6 @@
 import Foundation
 
 /// A specialized expression that has a read-only title shown to the user.
-public protocol TitledExpression<Root>: Expression {
+public protocol TitledExpression<Root>: ExpressionProtocol {
     var title: String { get }
 }

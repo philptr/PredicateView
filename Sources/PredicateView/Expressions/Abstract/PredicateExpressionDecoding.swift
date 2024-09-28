@@ -14,24 +14,24 @@ import Foundation
 ///
 /// However, in some cases, such as expressions containing other subexpressions, notably
 /// ``LogicalExpression``, the returned ``Expression`` may be of a type different than `Self`.
-public protocol PredicateExpressionDecoding<Root>: Expression {
+public protocol PredicateExpressionDecoding<Root>: ExpressionProtocol {
     func decode<PredicateExpressionType: PredicateExpression<Bool>>(
         _ expression: PredicateExpressionType,
         using decoders: [any PredicateExpressionDecoding<Root>]
-    ) -> (any Expression<Root>)?
+    ) -> (any ExpressionProtocol<Root>)?
 }
 
 public protocol LeafPredicateExpressionDecoding<Root>: PredicateExpressionDecoding {
     func decode<PredicateExpressionType: PredicateExpression<Bool>>(
         _ expression: PredicateExpressionType
-    ) -> (any Expression<Root>)?
+    ) -> (any ExpressionProtocol<Root>)?
 }
 
 extension LeafPredicateExpressionDecoding {
     public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
         _ expression: PredicateExpressionType,
         using decoders: [any PredicateExpressionDecoding<Root>]
-    ) -> (any Expression<Root>)? {
+    ) -> (any ExpressionProtocol<Root>)? {
         self.decode(expression)
     }
 }

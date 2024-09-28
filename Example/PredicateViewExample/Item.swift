@@ -15,13 +15,15 @@ final class Item {
     }
     
     var id: UUID = UUID()
-    var timestamp: Date = Date()
+    var creationDate: Date = Date()
+    var modificationDate: Date = Date()
     var title: String = ""
     var _status: Status.RawValue? = nil
     
     init() {
         self.id = UUID()
-        self.timestamp = Date(timeIntervalSinceNow: .random(in: -3600 * 24 * 30...3600 * 24 * 30))
+        self.creationDate = Date(timeIntervalSinceNow: .random(in: -3600 * 24 * 30...3600 * 24 * 30))
+        self.modificationDate = Date(timeIntervalSinceNow: .random(in: -3600 * 24 * 30...3600 * 24 * 30))
         self.title = "Item \(Int.random(in: 1...1000))"
         self._status = Status.allCases.randomElement()!.rawValue
     }

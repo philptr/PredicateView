@@ -11,7 +11,7 @@ import SwiftUI
 
 public protocol ExpressionView<Expr>: View {
     associatedtype Root
-    associatedtype Expr: Expression<Root>
+    associatedtype Expr: ExpressionProtocol<Root>
     
     var expression: Binding<Expr> { get }
     init(expression: Binding<Expr>)
@@ -30,8 +30,8 @@ public protocol HierarchicalExpressionView<Expr>: ExpressionView {
 }
 
 extension HierarchicalExpressionView {
-    func childView<Element>(for child: Binding<any Expression<Element>>) -> some View {
-        func _view<T: Expression>(for expression: T) -> any View where T.Root == Element {
+    func childView<Element>(for child: Binding<any ExpressionProtocol<Element>>) -> some View {
+        func _view<T: ExpressionProtocol>(for expression: T) -> any View where T.Root == Element {
             T.makeView(
                 for: Binding(get: { child.wrappedValue as! T }, set: { child.wrappedValue = $0 })
             )

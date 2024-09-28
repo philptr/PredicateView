@@ -1,5 +1,5 @@
 //
-//  Expression+View.swift
+//  ExpressionProtocol+ViewFactory.swift
 //
 //
 //  Created by Phil Zakharchenko on 4/20/24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension Expression {
+extension ExpressionProtocol {
     @ViewBuilder
     public static func makeOperatorMenu<T: Hashable>(
         using operation: Binding<T>

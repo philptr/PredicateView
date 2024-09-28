@@ -23,6 +23,8 @@ struct DateExpression<Root>: ContentExpression, WrappablePredicateExpression {
     enum Operator: String, ExpressionOperator {
         case before = "is before"
         case after = "is after"
+        case onOrBefore = "is on or before"
+        case onOrAfter = "is on or after"
         case sameDay = "is same day"
         case sameWeek = "is same week"
         case sameMonth = "is same month"
@@ -30,15 +32,19 @@ struct DateExpression<Root>: ContentExpression, WrappablePredicateExpression {
         var comparisonOperator: PredicateExpressions.ComparisonOperator? {
             switch self {
             case .before: .lessThan
+            case .onOrBefore: .lessThanOrEqual
             case .after: .greaterThan
+            case .onOrAfter: .greaterThanOrEqual
             default: nil
             }
         }
         
         init?(_ comparisonOperator: PredicateExpressions.ComparisonOperator) {
             switch comparisonOperator {
-            case .lessThan, .lessThanOrEqual: self = .before
-            case .greaterThan, .greaterThanOrEqual: self = .after
+            case .lessThan: self = .before
+            case .lessThanOrEqual: self = .onOrBefore
+            case .greaterThan: self = .after
+            case .greaterThanOrEqual: self = .onOrAfter
             @unknown default: return nil
             }
         }
@@ -56,10 +62,16 @@ struct DateExpression<Root>: ContentExpression, WrappablePredicateExpression {
         using attribute: StandardAttribute<Self>
     ) -> (any StandardPredicateExpression<Bool>)? where V: StandardPredicateExpression<Value> {
         switch attribute.operator {
-        case .before, .after:
+        case .before, .onOrBefore, .after, .onOrAfter:
+            let value: Date = switch attribute.operator {
+            case .before, .onOrAfter: attribute.value.startOfDay
+            case .onOrBefore, .after: attribute.value.endOfDay
+            default: attribute.value
+            }
+            
             return PredicateExpressions.Comparison(
                 lhs: variable,
-                rhs: PredicateExpressions.Value(attribute.value),
+                rhs: PredicateExpressions.Value(value),
                 op: attribute.operator.comparisonOperator ?? .lessThan
             )
         case .sameDay, .sameWeek, .sameMonth:
@@ -101,11 +113,11 @@ struct DateExpression<Root>: ContentExpression, WrappablePredicateExpression {
     
     func decode<PredicateExpressionType: PredicateExpression<Bool>>(
         _ expression: PredicateExpressionType
-    ) -> (any Expression<Root>)? {
+    ) -> (any ExpressionProtocol<Root>)? {
         switch expression {
         case let expression as PredicateExpressions.Comparison<KeyPathPredicateExpression, ValuePredicateExpression>:
-            decoded(
-                keyPath: expression.lhs,
+            populateFromDecodedExpression(
+                ifKeyPathMatches: expression.lhs,
                 attribute: .init(operator: .init(expression.op) ?? .before, value: expression.rhs.value)
             )
         case let expression as PredicateExpressions.Conjunction<Comparison, Comparison>:

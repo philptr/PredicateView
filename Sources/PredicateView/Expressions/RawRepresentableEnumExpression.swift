@@ -54,7 +54,7 @@ struct RawRepresentableEnumExpression<Root, EnumType>: ContentExpression, Wrappa
     
     public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
         _ expression: PredicateExpressionType
-    ) -> (any Expression<Root>)? {
+    ) -> (any ExpressionProtocol<Root>)? {
         // TODO: Needs implementation.
         nil
     }

@@ -8,6 +8,6 @@
 import Foundation
 
 public protocol OperatorContainer: Equatable {
-    associatedtype Expr: Expression
+    associatedtype Expr: ExpressionProtocol
     var `operator`: Expr.Operator { get set }
 }

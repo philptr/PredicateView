@@ -14,7 +14,9 @@ extension AnyExpression {
     }
 }
 
-struct CustomExpression<Root, Content>: ContentExpression where Content: CustomExpressionView, Root == Content.Root {
+// MARK: - CustomExpression
+
+struct CustomExpression<Root, Content>: ContentExpression, KeyPathExpression where Content: CustomExpressionView, Root == Content.Root {
     typealias AttributeValue = Content.Value
     typealias Operator = Content.Operator
     
@@ -24,6 +26,7 @@ struct CustomExpression<Root, Content>: ContentExpression where Content: CustomE
     
     var id = UUID()
     var title: String { Content.title }
+    var keyPath: KeyPath<Root, Content.Value> { Content.keyPath }
     var attribute: StandardAttribute<Self> = Self.defaultAttribute
     
     public func buildPredicate(
@@ -40,7 +43,11 @@ struct CustomExpression<Root, Content>: ContentExpression where Content: CustomE
     
     public func decode<PredicateExpressionType: PredicateExpression<Bool>>(
         _ expression: PredicateExpressionType
-    ) -> (any Expression<Root>)? {
-        Content.decode(expression)?.wrappedValue
+    ) -> (any ExpressionProtocol<Root>)? {
+        guard let result = Content.decode(expression) else { return nil }
+        return populateFromDecodedExpression(
+            ifKeyPathMatches: result.keyPathExpression,
+            attribute: .init(operator: result.operator, value: result.value)
+        )
     }
 }
