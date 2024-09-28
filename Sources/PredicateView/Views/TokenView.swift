@@ -50,9 +50,9 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
             }
             .padding(4)
             
+            widget
+            
             if isEnabled {
-                widget
-                
                 Menu("") { menuItems }
                     .padding(6)
                     .fixedSize()
@@ -60,6 +60,7 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
                     .preference(key: PredicateDeletedStatusPreferenceKey.self, value: isDeleted)
             }
         }
+        .frame(maxHeight: .infinity, alignment: .top)
         .background {
             shape
                 .strokeBorder(Color.accentColor.opacity(0.3), lineWidth: 1)

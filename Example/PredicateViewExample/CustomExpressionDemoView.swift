@@ -64,13 +64,21 @@ struct StatusExpressionView: CustomExpressionView {
     /// The binding to the current status value.
     @Binding var value: Item.Status.RawValue?
     
+    @Environment(\.isEnabled) private var isEnabled
+    
     /// The body of the view, which creates a picker for selecting the status.
     var body: some View {
-        Picker("", selection: $value) {
-            ForEach(Item.Status.allCases, id: \.rawValue) { item in
-                Text(item.rawValue)
-                    .tag(item.rawValue)
+        if isEnabled {
+            // The control is read-write. Allow the user to pick the status.
+            Picker("", selection: $value) {
+                ForEach(Item.Status.allCases, id: \.rawValue) { item in
+                    Text(item.rawValue)
+                        .tag(item.rawValue)
+                }
             }
+        } else {
+            // The control is read-only; display text instead.
+            Text(value ?? "")
         }
     }
 }

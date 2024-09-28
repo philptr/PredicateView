@@ -161,6 +161,7 @@ public struct LogicalExpressionView<Root>: HierarchicalExpressionView {
                 NewItemMenuButton { menuItems }
             }
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
     
     @ViewBuilder
