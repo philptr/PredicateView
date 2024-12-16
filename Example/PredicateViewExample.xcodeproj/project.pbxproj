@@ -10,6 +10,7 @@
 		4A7236902CA8A677003DD1EC /* CustomExpressionDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A72368F2CA8A677003DD1EC /* CustomExpressionDemoView.swift */; };
 		4A7236922CA8A877003DD1EC /* PredicateDecodingDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7236912CA8A877003DD1EC /* PredicateDecodingDemoView.swift */; };
 		4A7236942CA8A9B3003DD1EC /* ReadOnlyDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7236932CA8A9B3003DD1EC /* ReadOnlyDemoView.swift */; };
+		4A7D7B472D0E8B5D0027A305 /* PredicateView in Frameworks */ = {isa = PBXBuildFile; productRef = 4A7D7B462D0E8B5D0027A305 /* PredicateView */; };
 		4ACACCED2C9F5C65003FA734 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACACCE82C9F5C65003FA734 /* ContentView.swift */; };
 		4ACACCEE2C9F5C65003FA734 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACACCE92C9F5C65003FA734 /* Item.swift */; };
 		4ACACCEF2C9F5C65003FA734 /* PredicateViewExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACACCEB2C9F5C65003FA734 /* PredicateViewExampleApp.swift */; };
@@ -42,6 +43,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4ACACCFE2C9F5E26003FA734 /* PredicateView in Frameworks */,
+				4A7D7B472D0E8B5D0027A305 /* PredicateView in Frameworks */,
 				4ACACCF72C9F5C9B003FA734 /* PredicateView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -110,6 +112,7 @@
 			packageProductDependencies = (
 				4ACACCF32C9F5C78003FA734 /* PredicateView */,
 				4ACACCF62C9F5C9B003FA734 /* PredicateView */,
+				4A7D7B462D0E8B5D0027A305 /* PredicateView */,
 			);
 			productName = PredicateViewExample;
 			productReference = 4ACACCD12C9F5C56003FA734 /* PredicateViewExample.app */;
@@ -140,7 +143,7 @@
 			mainGroup = 4ACACCC82C9F5C56003FA734;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				4ACACCF52C9F5C9B003FA734 /* XCLocalSwiftPackageReference "../../PredicateView" */,
+				4A7D7B452D0E8B5D0027A305 /* XCLocalSwiftPackageReference "../../PredicateView" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4ACACCD22C9F5C56003FA734 /* Products */;
@@ -395,13 +398,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		4ACACCF52C9F5C9B003FA734 /* XCLocalSwiftPackageReference "../../PredicateView" */ = {
+		4A7D7B452D0E8B5D0027A305 /* XCLocalSwiftPackageReference "../../PredicateView" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../PredicateView;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4A7D7B462D0E8B5D0027A305 /* PredicateView */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PredicateView;
+		};
 		4ACACCF32C9F5C78003FA734 /* PredicateView */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PredicateView;

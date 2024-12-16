@@ -13,7 +13,7 @@ public protocol ContentExpression<Root>: PredicateExpressionConvertible & Titled
     associatedtype ExprView = ContentExpressionView<Root, Self>
     associatedtype Result: View
     
-    @ViewBuilder
+    @ViewBuilder @MainActor
     static func makeContentView(_ value: Binding<AttributeValue>) -> Result
 }
 
@@ -25,7 +25,7 @@ public struct ContentExpressionView<Root, Expr: ContentExpression<Root>>: Expres
         self.expression = expression
     }
     
-    @ViewBuilder
+    @MainActor
     public var body: some View {
         @Binding(projectedValue: self.expression) var expression: Expr
         

@@ -11,5 +11,5 @@ import SwiftUI
 public protocol BindableView<Value>: View {
     associatedtype Value
     
-    init(value binding: Binding<Value>)
+    nonisolated init(value binding: Binding<Value>)
 }

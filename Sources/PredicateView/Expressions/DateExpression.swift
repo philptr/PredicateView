@@ -120,8 +120,6 @@ struct DateExpression<Root>: ContentExpression, WrappablePredicateExpression {
                 ifKeyPathMatches: expression.lhs,
                 attribute: .init(operator: .init(expression.op) ?? .before, value: expression.rhs.value)
             )
-        case let expression as PredicateExpressions.Conjunction<Comparison, Comparison>:
-            nil
         default:
             nil
         }

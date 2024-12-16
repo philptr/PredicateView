@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension ExpressionProtocol {
-    @ViewBuilder
+    @ViewBuilder @MainActor
     public static func makeOperatorMenu<T: Hashable>(
         using operation: Binding<T>
     ) -> some View {
@@ -18,7 +18,7 @@ extension ExpressionProtocol {
         }
     }
     
-    @ViewBuilder
+    @ViewBuilder @MainActor
     public static func makeOperatorMenu<T: Hashable>(
         using operation: Binding<T>,
         @ViewBuilder itemProvider: @escaping (Operator) -> some View
@@ -33,10 +33,12 @@ extension ExpressionProtocol {
         .labelsHidden()
     }
     
+    @MainActor
     public static func makeView(for expression: Binding<Self>) -> some ExpressionView {
         makeView(for: expression, parent: nil)
     }
     
+    @MainActor
     public static func makeView(for expression: Binding<Self>, parent: Binding<LogicalExpression<Root>>?) -> some ExpressionView {
         ExprView(expression: expression, parent: parent)
     }

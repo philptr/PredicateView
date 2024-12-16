@@ -17,7 +17,7 @@ public struct StandardAttribute<Expr>: ExpressionAttribute where Expr: Predicate
     public var value: Expr.AttributeValue
 }
 
-public struct MetadataAttribute<Expr, Metadata>: ExpressionAttribute where Expr: PredicateExpressionConvertible {
+public struct MetadataAttribute<Expr, Metadata>: ExpressionAttribute where Expr: PredicateExpressionConvertible, Metadata: Sendable {
     public var `operator`: Expr.Operator
     public var value: Expr.AttributeValue
     public var metadata: Metadata

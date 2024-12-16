@@ -7,12 +7,12 @@
 
 import Foundation
 
-public typealias ExpressionCompatible = Codable & Hashable
+public typealias ExpressionCompatible = Codable & Hashable & Sendable
 
 /// A generic struct that wraps any type conforming to the ``TitledExpression`` protocol.
 /// It provides type erasure for expressions, allowing different types of expressions
 /// to be used interchangeably as long as they share the same ``Root`` type.
-public struct AnyExpression<Root>: Identifiable {
+public struct AnyExpression<Root>: Identifiable, Sendable {
     /// The underlying expression that conforms to the ``TitledExpression`` protocol.
     public var wrappedValue: any TitledExpression<Root>
     

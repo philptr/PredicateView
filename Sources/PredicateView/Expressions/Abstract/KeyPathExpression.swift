@@ -22,3 +22,5 @@ extension KeyPathExpression {
     typealias KeyPathPredicateExpression = PredicateExpressions.KeyPath<PredicateExpressions.Variable<Root>, Value>
     typealias ValuePredicateExpression = PredicateExpressions.Value<Value>
 }
+
+extension KeyPath: @retroactive @unchecked Sendable { }

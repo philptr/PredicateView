@@ -14,7 +14,7 @@ public protocol PredicateExpressionConvertible<Root>: LeafPredicateExpressionDec
     associatedtype Attribute: ExpressionAttribute<Self>
     
     /// The type of the value associated with the attribute.
-    associatedtype AttributeValue: Hashable
+    associatedtype AttributeValue: Hashable & Sendable
     
     /// The default attribute for this expression type.
     static var defaultAttribute: Attribute { get }

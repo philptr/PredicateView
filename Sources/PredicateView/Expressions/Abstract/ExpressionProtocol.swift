@@ -10,7 +10,7 @@ import Foundation
 // MARK: - Expression
 
 /// Defines the core requirements for an expression in the predicate builder system.
-public protocol ExpressionProtocol<Root>: Identifiable {
+public protocol ExpressionProtocol<Root>: Identifiable, Sendable {
     /// The root type that this expression operates on.
     associatedtype Root
     
@@ -36,4 +36,4 @@ public protocol ExpressionProtocol<Root>: Identifiable {
     ) -> (any StandardPredicateExpression<Bool>)?
 }
 
-public protocol ExpressionOperator: CaseIterable, Hashable, RawRepresentable where RawValue == String, AllCases: RandomAccessCollection, AllCases.Index == Int { }
+public protocol ExpressionOperator: CaseIterable, Hashable, RawRepresentable, Sendable where RawValue == String, AllCases: RandomAccessCollection, AllCases.Index == Int { }

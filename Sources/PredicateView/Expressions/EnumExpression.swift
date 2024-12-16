@@ -10,16 +10,16 @@ import SwiftUI
 public typealias EnumExpressionCompatible = CaseIterable & CustomStringConvertible & Identifiable & ExpressionCompatible
 
 extension AnyExpression {
-    public init<T>(keyPath: KeyPath<Root, T>, title: String) where T: EnumExpressionCompatible, T.AllCases: RandomAccessCollection {
+    public init<T>(keyPath: KeyPath<Root, T>, title: String) where T: EnumExpressionCompatible & Sendable, T.AllCases: RandomAccessCollection {
         self.init(wrappedValue: EnumExpression(keyPath: keyPath, title: title))
     }
     
-    public init<T>(keyPath: KeyPath<Root, T?>, title: String) where T: EnumExpressionCompatible, T.AllCases: RandomAccessCollection {
+    public init<T>(keyPath: KeyPath<Root, T?>, title: String) where T: EnumExpressionCompatible & Sendable, T.AllCases: RandomAccessCollection {
         self.init(wrappedValue: OptionalExpression<Root, EnumExpression>(keyPath: keyPath, title: title))
     }
 }
 
-struct EnumExpression<Root, EnumType>: ContentExpression, WrappablePredicateExpression where EnumType: EnumExpressionCompatible, EnumType.AllCases: RandomAccessCollection {
+struct EnumExpression<Root, EnumType>: ContentExpression, WrappablePredicateExpression where EnumType: EnumExpressionCompatible & Sendable, EnumType.AllCases: RandomAccessCollection {
     typealias AttributeValue = EnumType
     
     enum Operator: String, ExpressionOperator {

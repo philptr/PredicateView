@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol OperatorContainer: Equatable {
+public protocol OperatorContainer: Equatable, Sendable {
     associatedtype Expr: ExpressionProtocol
     var `operator`: Expr.Operator { get set }
 }

@@ -109,6 +109,7 @@ struct NumericExpression<Root, Number>: ContentExpression, WrappablePredicateExp
         }
     }
     
+    @MainActor
     static func makeContentView(_ value: Binding<Number>) -> some View {
         StepperField(title: "Value", value: value)
     }

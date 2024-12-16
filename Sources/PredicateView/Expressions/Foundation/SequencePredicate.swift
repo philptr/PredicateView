@@ -16,7 +16,7 @@ extension PredicateExpressions {
     struct SequencePredicate<
         LHS: PredicateExpression,
         RHS: PredicateExpression
-    >: PredicateExpression where LHS.Output: Sequence, RHS.Output == Bool {
+    >: PredicateExpression where LHS.Output: Sequence, RHS.Output == Bool, LHS: Sendable, RHS: Sendable {
         typealias Element = LHS.Output.Element
         typealias Output = Bool
         
@@ -45,6 +45,7 @@ extension PredicateExpressions {
     }
 }
 
+extension PredicateExpressions.SequencePredicate: Sendable where LHS: Sendable, RHS: Sendable { }
 extension PredicateExpressions.SequencePredicate: StandardPredicateExpression where LHS: StandardPredicateExpression, RHS: StandardPredicateExpression { }
 
 extension PredicateExpressions.SequencePredicate: Codable where LHS: Codable, RHS: Codable {

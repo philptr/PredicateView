@@ -70,8 +70,10 @@ struct OptionalExpression<Root, WrappedExpression>: ExpressionWrapper where Wrap
 struct OptionalExpressionView<Root, WrappedExpression>: ExpressionView where WrappedExpression: ContentExpression<Root> & WrappablePredicateExpression {
     typealias Expression = OptionalExpression<Root, WrappedExpression>
     
+    @MainActor
     var expression: Binding<Expression>
     
+    @MainActor
     var body: some View {
         @Binding(projectedValue: expression) var expression
         

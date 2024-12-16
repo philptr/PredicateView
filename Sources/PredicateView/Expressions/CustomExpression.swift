@@ -9,14 +9,14 @@ import CompoundPredicate
 import SwiftUI
 
 extension AnyExpression {
-    public init<CustomView>(_ view: CustomView.Type = CustomView.self) where CustomView: CustomExpressionView, Root == CustomView.Root {
+    public init<CustomView>(_ view: CustomView.Type = CustomView.self) where CustomView: CustomExpressionView, Root == CustomView.Root, CustomView.Value: Sendable {
         self.init(wrappedValue: CustomExpression<Root, CustomView>())
     }
 }
 
 // MARK: - CustomExpression
 
-struct CustomExpression<Root, Content>: ContentExpression, KeyPathExpression where Content: CustomExpressionView, Root == Content.Root {
+struct CustomExpression<Root, Content>: ContentExpression, KeyPathExpression where Content: CustomExpressionView, Root == Content.Root, Content.Value: Sendable {
     typealias AttributeValue = Content.Value
     typealias Operator = Content.Operator
     

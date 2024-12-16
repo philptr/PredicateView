@@ -48,7 +48,7 @@ public struct PredicateView<Root>: View {
         LogicalExpression<Root>.makeView(for: $rootExpression)
             .environment(configuration)
             .onPreferenceChange(PredicateAttributePreferenceKey.self) { _ in
-                Task { buildPredicate() }
+                Task { await buildPredicate() }
             }
             .onAppear {
                 updateExpression()
