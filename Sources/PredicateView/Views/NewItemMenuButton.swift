@@ -22,8 +22,12 @@ struct NewItemMenuButton<Content: View>: View {
         Menu {
             menuItems()
         } label: {
-            Image(systemName: "plus.circle")
+            Image(systemName: "plus")
+                .fontWeight(.medium)
         }
+#if os(iOS)
+        .padding(.horizontal, 3)
+#endif
         .tint(.accentColor)
         .fixedSize()
         .menuStyle(.borderlessButton)

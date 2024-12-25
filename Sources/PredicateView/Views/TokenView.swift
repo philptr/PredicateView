@@ -53,11 +53,22 @@ struct TokenView<Root, Header: View, Content: View, MenuItems: View, Widget: Vie
             widget
             
             if isEnabled {
-                Menu("") { menuItems }
-                    .padding(6)
-                    .fixedSize()
-                    .menuStyle(.borderlessButton)
-                    .preference(key: PredicateDeletedStatusPreferenceKey.self, value: isDeleted)
+                Menu {
+                    menuItems
+                } label: {
+#if os(visionOS)
+                    Image(systemName: "ellipsis")
+                        .fontWeight(.medium)
+#else
+                    EmptyView()
+#endif
+                }
+#if os(macOS)
+                .padding(6)
+#endif
+                .fixedSize()
+                .menuStyle(.borderlessButton)
+                .preference(key: PredicateDeletedStatusPreferenceKey.self, value: isDeleted)
             }
         }
         .frame(maxHeight: .infinity, alignment: .top)
