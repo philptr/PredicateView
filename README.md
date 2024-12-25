@@ -1,5 +1,9 @@
 # PredicateView
 
+[![Swift Package Manager](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat-square)](https://swift.org/package-manager)
+[![Platforms](https://img.shields.io/badge/Platforms-iOS_17.0+_macOS_14.0+_visionOS_1+-blue?style=flat-square)](https://developer.apple.com/swift)
+[![Swift](https://img.shields.io/badge/Swift-6.0+-orange?style=flat-square)](https://swift.org)
+
 A SwiftUI control for viewing and editing Swift Predicates
 
 ![PredicateView on macOS](Resources/MacDemo.png "PredicateView on macOS")
